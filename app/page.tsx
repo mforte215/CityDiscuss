@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import Image from "next/image";
 
 export default async function Home() {
   console.log("URL:", process.env.NEXT_PUBLIC_SUPABASE_URL);
@@ -12,6 +13,13 @@ export default async function Home() {
 
   return (
     <div className="mx-auto max-w-2xl px-6 py-20">
+      <Image
+        src="/logo.png"
+        alt="CityDiscuss"
+        width={72}
+        height={72}
+        className="mb-6 rounded-2xl"
+      />
       <h1 className="bg-gradient-to-br from-white to-white/60 bg-clip-text text-4xl font-extrabold leading-tight tracking-tighter text-transparent">
         Your city.
         <br />
