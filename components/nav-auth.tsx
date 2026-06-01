@@ -42,11 +42,14 @@ export function NavAuth() {
   if (user) {
     return (
       <div className="flex items-center gap-3">
-        <span className="text-sm text-white/50">
+        <Link
+          href="/account"
+          className="text-sm text-white/50 hover:text-white/80"
+        >
           {user.user_metadata?.username ||
             user.user_metadata?.full_name ||
             user.email?.split("@")[0]}
-        </span>
+        </Link>
         <button
           onClick={handleLogout}
           className="rounded-lg border border-white/10 px-4 py-1.5 text-sm text-white/70 hover:bg-white/5"
