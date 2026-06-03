@@ -164,18 +164,22 @@ export default async function CityPage(props: {
               key={post.id}
               className="group flex gap-1 rounded-2xl border border-white/5 bg-white/[0.02] px-3 py-3 transition-all hover:border-white/10 hover:bg-white/[0.04]"
             >
-              {/* Vote column */}
-              <VoteButton
-                postId={post.id}
-                initialScore={post.score}
-                initialUserVote={userVote as 0 | 1 | -1}
-              />
+              {/* Vote column — needs its own z-index to stay clickable */}
+              <div className="relative z-10">
+                <VoteButton
+                  postId={post.id}
+                  initialScore={post.score}
+                  initialUserVote={userVote as 0 | 1 | -1}
+                />
+              </div>
 
-              {/* Content */}
-              <Link
-                href={`/city/${slug}/${post.id}`}
-                className="flex min-w-0 flex-1 gap-3 pl-1"
-              >
+              {/* Content with overlay link */}
+              <div className="relative flex min-w-0 flex-1 gap-3 pl-1">
+                <Link
+                  href={`/city/${slug}/${post.id}`}
+                  className="absolute inset-0"
+                  aria-label={post.title}
+                />
                 {post.post_type === "photo" && post.media_url ? (
                   <div className="relative h-[72px] w-[72px] shrink-0 overflow-hidden rounded-xl border border-white/[0.07]">
                     <img
@@ -189,9 +193,11 @@ export default async function CityPage(props: {
                     ▶
                   </div>
                 ) : (
-                  <Avatar username={username} />
+                  <div className="pointer-events-none">
+                    <Avatar username={username} />
+                  </div>
                 )}
-                <div className="min-w-0 flex-1">
+                <div className="pointer-events-none min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <h3 className="text-[15px] font-semibold leading-snug tracking-[-0.01em]">
                       {post.title}
@@ -210,8 +216,7 @@ export default async function CityPage(props: {
                   <div className="mt-2.5 flex gap-4 text-xs text-white/25">
                     <Link
                       href={`/profile/${username}`}
-                      className="font-medium text-white/45 hover:text-blue-400"
-                      onClick={(e) => e.stopPropagation()}
+                      className="relative pointer-events-auto font-medium text-white/45 hover:text-blue-400"
                     >
                       @{username}
                     </Link>
@@ -219,7 +224,7 @@ export default async function CityPage(props: {
                     <span>💬 {commentCount}</span>
                   </div>
                 </div>
-              </Link>
+              </div>
             </div>
           );
         })}
