@@ -4,6 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { CommentForm } from "@/components/comment-form";
 import { VoteButton } from "@/components/vote-button";
 import { DeleteEditButtons } from "@/components/delete-edit-buttons";
+import { DeleteCommentButton } from "@/components/delete-comment-button";
+
 function youtubeEmbedUrl(url: string): string | null {
   const ytMatch = url.match(
     /(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]{11})/,
@@ -209,6 +211,13 @@ export default async function PostPage({
                   <span className="text-[11px] text-white/20">
                     {timeAgo(c.created_at)}
                   </span>
+                  <div className="ml-auto">
+                    <DeleteCommentButton
+                      commentId={c.id}
+                      authorId={c.user_id}
+                      currentUserId={user?.id ?? null}
+                    />
+                  </div>
                 </div>
                 <p className="pl-[38px] text-sm leading-relaxed text-white/50">
                   {c.body}
