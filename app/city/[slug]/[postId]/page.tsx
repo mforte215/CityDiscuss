@@ -2,6 +2,38 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { CommentForm } from "@/components/comment-form";
+import { VoteButton } from "@/components/vote-button";
+
+function youtubeEmbedUrl(url: string): string | null {
+  const ytMatch = url.match(
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]{11})/,
+  );
+  if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}`;
+  return null;
+}
+
+function VideoEmbed({ url }: { url: string }) {
+  const embedUrl = youtubeEmbedUrl(url);
+  if (embedUrl) {
+    return (
+      <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-white/[0.07]">
+        <iframe
+          src={embedUrl}
+          className="h-full w-full"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        />
+      </div>
+    );
+  }
+  return (
+    <video
+      src={url}
+      controls
+      className="w-full rounded-xl border border-white/[0.07]"
+    />
+  );
+}
 
 function Avatar({ username, size = 36 }: { username: string; size?: number }) {
   const colors = ["#2563eb", "#7c3aed", "#0891b2", "#059669", "#d97706"];
@@ -40,23 +72,45 @@ export default async function PostPage({
   const { slug, postId } = await params;
   const supabase = await createClient();
 
-  // Fetch post with author
-  const { data: post } = await supabase
-    .from("posts")
-    .select("*, profiles(username)")
-    .eq("id", postId)
-    .single();
+  const [
+    { data: post },
+    { data: comments },
+    {
+      data: { user },
+    },
+  ] = await Promise.all([
+    supabase
+      .from("posts")
+      .select("*, profiles(username), post_votes(value)")
+      .eq("id", postId)
+      .single(),
+    supabase
+      .from("comments")
+      .select("*, profiles(username)")
+      .eq("post_id", postId)
+      .order("created_at", { ascending: true }),
+    supabase.auth.getUser(),
+  ]);
 
   if (!post) notFound();
 
-  // Fetch comments with authors
-  const { data: comments } = await supabase
-    .from("comments")
-    .select("*, profiles(username)")
-    .eq("post_id", postId)
-    .order("created_at", { ascending: true });
-
   const author = post.profiles?.username || "anonymous";
+  const score =
+    (post.post_votes as { value: number }[] | null)?.reduce(
+      (sum, v) => sum + v.value,
+      0,
+    ) ?? 0;
+
+  let userVote: 1 | -1 | 0 = 0;
+  if (user) {
+    const { data: vote } = await supabase
+      .from("post_votes")
+      .select("value")
+      .eq("post_id", postId)
+      .eq("user_id", user.id)
+      .single();
+    if (vote) userVote = vote.value as 1 | -1;
+  }
 
   return (
     <div className="mx-auto max-w-2xl px-6 py-8">
@@ -71,7 +125,7 @@ export default async function PostPage({
       <div className="rounded-2xl border border-white/[0.06] bg-white/[0.03] px-6 py-5">
         <div className="mb-4 flex items-center gap-3">
           <Avatar username={author} size={40} />
-          <div>
+          <div className="flex-1">
             <span className="text-sm font-semibold">@{author}</span>
             <span className="ml-2.5 text-xs text-white/25">
               {timeAgo(post.created_at)}
@@ -81,7 +135,36 @@ export default async function PostPage({
         <h1 className="mb-3 text-xl font-bold leading-snug tracking-[-0.02em]">
           {post.title}
         </h1>
-        <p className="text-[15px] leading-relaxed text-white/55">{post.body}</p>
+
+        {post.post_type === "photo" && post.media_url && (
+          <div className="mb-4 overflow-hidden rounded-xl border border-white/[0.07]">
+            <img
+              src={post.media_url}
+              alt={post.title}
+              className="w-full object-contain"
+            />
+          </div>
+        )}
+
+        {post.post_type === "video" && post.media_url && (
+          <div className="mb-4">
+            <VideoEmbed url={post.media_url} />
+          </div>
+        )}
+
+        {post.body && (
+          <p className="text-[15px] leading-relaxed text-white/55">{post.body}</p>
+        )}
+
+        {/* Vote row */}
+        <div className="mt-5 border-t border-white/[0.05] pt-4">
+          <VoteButton
+            postId={postId}
+            initialScore={score}
+            initialUserVote={userVote}
+            orientation="horizontal"
+          />
+        </div>
       </div>
 
       {/* Comments */}
