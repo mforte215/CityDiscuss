@@ -49,9 +49,7 @@ export default async function Home() {
           <h1 className="text-2xl font-extrabold tracking-tight">
             CityDiscuss
           </h1>
-          <p className="text-sm text-white/35">
-            Latest posts from every city
-          </p>
+          <p className="text-sm text-white/35">Latest posts from every city</p>
         </div>
       </div>
 
@@ -62,12 +60,16 @@ export default async function Home() {
           const city = post.cities;
 
           return (
-            <Link
+            <div
               key={post.id}
-              href={`/city/${city?.slug}/${post.id}`}
-              className="group block rounded-2xl border border-white/5 bg-white/[0.02] px-5 py-4 transition-all hover:border-white/10 hover:bg-white/[0.04]"
+              className="group relative rounded-2xl border border-white/5 bg-white/[0.02] px-5 py-4 transition-all hover:border-white/10 hover:bg-white/[0.04]"
             >
-              <div className="flex gap-3">
+              <Link
+                href={`/city/${city?.slug}/${post.id}`}
+                className="absolute inset-0 rounded-2xl"
+                aria-label={post.title}
+              />
+              <div className="relative flex gap-3 pointer-events-none">
                 {post.post_type === "photo" && post.media_url ? (
                   <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-white/[0.07]">
                     <img
@@ -104,13 +106,18 @@ export default async function Home() {
                         {city.name}
                       </span>
                     )}
-                    <span className="text-white/40">@{username}</span>
+                    <Link
+                      href={`/profile/${username}`}
+                      className="relative pointer-events-auto text-white/40 hover:text-blue-400"
+                    >
+                      @{username}
+                    </Link>
                     <span>{timeAgo(post.created_at)}</span>
                     <span>💬 {commentCount}</span>
                   </div>
                 </div>
               </div>
-            </Link>
+            </div>
           );
         })}
 

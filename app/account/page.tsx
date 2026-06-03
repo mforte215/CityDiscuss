@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 
 export default function AccountPage() {
@@ -45,7 +46,6 @@ export default function AccountPage() {
     } = await supabase.auth.getUser();
     if (!user) return;
 
-    // Check if username is taken
     const { data: existing } = await supabase
       .from("profiles")
       .select("id")
@@ -123,6 +123,15 @@ export default function AccountPage() {
         >
           {saving ? "Saving..." : "Save username"}
         </button>
+
+        {current && (
+          <Link
+            href={`/profile/${current}`}
+            className="block text-center text-sm text-white/30 hover:text-white/60"
+          >
+            View your public profile →
+          </Link>
+        )}
       </div>
     </div>
   );

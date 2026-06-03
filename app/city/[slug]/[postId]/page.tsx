@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { CommentForm } from "@/components/comment-form";
 import { VoteButton } from "@/components/vote-button";
-
+import { DeleteEditButtons } from "@/components/delete-edit-buttons";
 function youtubeEmbedUrl(url: string): string | null {
   const ytMatch = url.match(
     /(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]{11})/,
@@ -81,7 +81,7 @@ export default async function PostPage({
   ] = await Promise.all([
     supabase
       .from("posts")
-      .select("*, profiles(username), post_votes(value)")
+      .select("*, user_id, profiles(username), post_votes(value)")
       .eq("id", postId)
       .single(),
     supabase
@@ -125,16 +125,25 @@ export default async function PostPage({
       <div className="rounded-2xl border border-white/[0.06] bg-white/[0.03] px-6 py-5">
         <div className="mb-4 flex items-center gap-3">
           <Avatar username={author} size={40} />
-          <div className="flex-1">
-            <Link
-              href={`/profile/${author}`}
-              className="text-sm font-semibold hover:text-blue-400"
-            >
-              @{author}
-            </Link>
-            <span className="ml-2.5 text-xs text-white/25">
-              {timeAgo(post.created_at)}
-            </span>
+          <div className="flex flex-1 items-center justify-between">
+            <div>
+              <Link
+                href={`/profile/${author}`}
+                className="text-sm font-semibold hover:text-blue-400"
+              >
+                @{author}
+              </Link>
+              <span className="ml-2.5 text-xs text-white/25">
+                {timeAgo(post.created_at)}
+              </span>
+            </div>
+            <DeleteEditButtons
+              postId={postId}
+              slug={slug}
+              authorId={post.user_id}
+              currentUserId={user?.id ?? null}
+              authorUsername={author}
+            />
           </div>
         </div>
 
