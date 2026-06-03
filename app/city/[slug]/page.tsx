@@ -28,8 +28,7 @@ function timeAgo(date: string) {
 }
 
 function hotScore(score: number, createdAt: string) {
-  const ageHours =
-    (Date.now() - new Date(createdAt).getTime()) / 1000 / 3600;
+  const ageHours = (Date.now() - new Date(createdAt).getTime()) / 1000 / 3600;
   return score / Math.pow(ageHours + 2, 1.5);
 }
 
@@ -49,7 +48,12 @@ export default async function CityPage(props: {
 
   const supabase = await createClient();
 
-  const [{ data: city }, { data: { user } }] = await Promise.all([
+  const [
+    { data: city },
+    {
+      data: { user },
+    },
+  ] = await Promise.all([
     supabase.from("cities").select("*").eq("slug", slug).single(),
     supabase.auth.getUser(),
   ]);
@@ -61,16 +65,15 @@ export default async function CityPage(props: {
     .select("*, profiles(username), comments(count), post_votes(value)")
     .eq("city_id", city.id);
 
-  // Compute score per post
   const scored = (posts ?? []).map((post: any) => ({
     ...post,
-    score: (post.post_votes as { value: number }[] | null)?.reduce(
-      (sum, v) => sum + v.value,
-      0,
-    ) ?? 0,
+    score:
+      (post.post_votes as { value: number }[] | null)?.reduce(
+        (sum, v) => sum + v.value,
+        0,
+      ) ?? 0,
   }));
 
-  // Sort
   if (sort === "top") {
     scored.sort((a, b) => b.score - a.score);
   } else if (sort === "new") {
@@ -79,13 +82,12 @@ export default async function CityPage(props: {
         new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
     );
   } else {
-    // hot
     scored.sort(
-      (a, b) => hotScore(b.score, b.created_at) - hotScore(a.score, a.created_at),
+      (a, b) =>
+        hotScore(b.score, b.created_at) - hotScore(a.score, a.created_at),
     );
   }
 
-  // Fetch current user's votes for all these posts
   let userVotesMap: Record<string, 1 | -1> = {};
   if (user && scored.length > 0) {
     const { data: votes } = await supabase
@@ -206,9 +208,13 @@ export default async function CityPage(props: {
                     </p>
                   )}
                   <div className="mt-2.5 flex gap-4 text-xs text-white/25">
-                    <span className="font-medium text-white/45">
+                    <Link
+                      href={`/profile/${username}`}
+                      className="font-medium text-white/45 hover:text-blue-400"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       @{username}
-                    </span>
+                    </Link>
                     <span>{timeAgo(post.created_at)}</span>
                     <span>💬 {commentCount}</span>
                   </div>

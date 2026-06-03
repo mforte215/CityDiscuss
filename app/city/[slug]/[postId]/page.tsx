@@ -126,12 +126,18 @@ export default async function PostPage({
         <div className="mb-4 flex items-center gap-3">
           <Avatar username={author} size={40} />
           <div className="flex-1">
-            <span className="text-sm font-semibold">@{author}</span>
+            <Link
+              href={`/profile/${author}`}
+              className="text-sm font-semibold hover:text-blue-400"
+            >
+              @{author}
+            </Link>
             <span className="ml-2.5 text-xs text-white/25">
               {timeAgo(post.created_at)}
             </span>
           </div>
         </div>
+
         <h1 className="mb-3 text-xl font-bold leading-snug tracking-[-0.02em]">
           {post.title}
         </h1>
@@ -153,7 +159,9 @@ export default async function PostPage({
         )}
 
         {post.body && (
-          <p className="text-[15px] leading-relaxed text-white/55">{post.body}</p>
+          <p className="text-[15px] leading-relaxed text-white/55">
+            {post.body}
+          </p>
         )}
 
         {/* Vote row */}
@@ -183,7 +191,12 @@ export default async function PostPage({
               >
                 <div className="mb-2 flex items-center gap-2.5">
                   <Avatar username={cAuthor} size={28} />
-                  <span className="text-sm font-semibold">@{cAuthor}</span>
+                  <Link
+                    href={`/profile/${cAuthor}`}
+                    className="text-sm font-semibold hover:text-blue-400"
+                  >
+                    @{cAuthor}
+                  </Link>
                   <span className="text-[11px] text-white/20">
                     {timeAgo(c.created_at)}
                   </span>
@@ -196,7 +209,6 @@ export default async function PostPage({
           })}
         </div>
 
-        {/* Reply form */}
         <CommentForm postId={postId} slug={slug} />
       </div>
     </div>
