@@ -1,10 +1,11 @@
 "use client";
 
-import { use, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 type PostType = "text" | "photo" | "video";
+type City = { name: string; slug: string; state: string };
 
 const TABS: { value: PostType; label: string; icon: string }[] = [
   { value: "text", label: "Text", icon: "✏️" },
@@ -16,11 +17,10 @@ function isYouTube(url: string) {
   return /youtube\.com|youtu\.be/.test(url);
 }
 
-export default function NewPostPage(props: {
-  params: Promise<{ slug: string }>;
-}) {
-  const { slug } = use(props.params);
+export default function NewPostPage() {
   const router = useRouter();
+  const [cities, setCities] = useState<City[]>([]);
+  const [citySlug, setCitySlug] = useState("");
   const [postType, setPostType] = useState<PostType>("text");
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
@@ -31,6 +31,17 @@ export default function NewPostPage(props: {
   const [error, setError] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    const supabase = createClient();
+    supabase
+      .from("cities")
+      .select("name, slug, state")
+      .order("name")
+      .then(({ data }) => {
+        if (data) setCities(data);
+      });
+  }, []);
+
   function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0];
     if (!f) return;
@@ -39,12 +50,13 @@ export default function NewPostPage(props: {
   }
 
   const filled =
+    citySlug &&
     title.trim() &&
-    (postType === "text"
-      ? body.trim()
-      : postType === "photo"
-        ? !!file
-        : videoUrl.trim());
+    (postType === "photo"
+      ? !!file
+      : postType === "video"
+        ? videoUrl.trim()
+        : true);
 
   async function handleSubmit() {
     if (!filled) return;
@@ -65,7 +77,7 @@ export default function NewPostPage(props: {
     const { data: city } = await supabase
       .from("cities")
       .select("id")
-      .eq("slug", slug)
+      .eq("slug", citySlug)
       .single();
 
     if (!city) {
@@ -101,7 +113,7 @@ export default function NewPostPage(props: {
       city_id: city.id,
       user_id: user.id,
       title: title.trim(),
-      body: postType === "text" ? body.trim() : null,
+      body: body.trim() || null,
       post_type: postType,
       media_url,
     });
@@ -112,7 +124,7 @@ export default function NewPostPage(props: {
       return;
     }
 
-    router.push(`/city/${slug}`);
+    router.push(`/city/${citySlug}`);
     router.refresh();
   }
 
@@ -129,28 +141,47 @@ export default function NewPostPage(props: {
         Start a discussion
       </h2>
 
-      {/* Post type tabs */}
-      <div className="mb-5 flex gap-1 rounded-xl border border-white/[0.07] bg-white/[0.03] p-1">
-        {TABS.map((tab) => (
-          <button
-            key={tab.value}
-            onClick={() => {
-              setPostType(tab.value);
-              setError("");
-            }}
-            className={`flex flex-1 items-center justify-center gap-2 rounded-lg py-2 text-sm font-semibold transition-colors ${
-              postType === tab.value
-                ? "bg-white/[0.08] text-white"
-                : "text-white/30 hover:text-white/55"
-            }`}
-          >
-            <span>{tab.icon}</span>
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
       <div className="flex flex-col gap-4">
+        {/* City selector */}
+        <div>
+          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-white/35">
+            City
+          </label>
+          <select
+            value={citySlug}
+            onChange={(e) => setCitySlug(e.target.value)}
+            className="w-full rounded-xl border border-white/[0.08] bg-[#0f0f0f] px-4 py-3 text-sm text-white outline-none focus:border-blue-500/30"
+          >
+            <option value="">Select a city...</option>
+            {cities.map((c) => (
+              <option key={c.slug} value={c.slug}>
+                {c.name}, {c.state}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Post type tabs */}
+        <div className="flex gap-1 rounded-xl border border-white/[0.07] bg-white/[0.03] p-1">
+          {TABS.map((tab) => (
+            <button
+              key={tab.value}
+              onClick={() => {
+                setPostType(tab.value);
+                setError("");
+              }}
+              className={`flex flex-1 items-center justify-center gap-2 rounded-lg py-2 text-sm font-semibold transition-colors ${
+                postType === tab.value
+                  ? "bg-white/[0.08] text-white"
+                  : "text-white/30 hover:text-white/55"
+              }`}
+            >
+              <span>{tab.icon}</span>
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
         {/* Title */}
         <div>
           <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-white/35">
@@ -163,22 +194,6 @@ export default function NewPostPage(props: {
             className="w-full rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 text-[15px] text-white outline-none placeholder:text-white/20 focus:border-blue-500/30"
           />
         </div>
-
-        {/* Text body */}
-        {postType === "text" && (
-          <div>
-            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-white/35">
-              Details
-            </label>
-            <textarea
-              value={body}
-              onChange={(e) => setBody(e.target.value)}
-              placeholder="Share more context, ask a question, or start a conversation..."
-              rows={6}
-              className="w-full resize-y rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 text-sm leading-relaxed text-white outline-none placeholder:text-white/20 focus:border-blue-500/30"
-            />
-          </div>
-        )}
 
         {/* Photo upload */}
         {postType === "photo" && (
@@ -242,6 +257,25 @@ export default function NewPostPage(props: {
             )}
           </div>
         )}
+
+        {/* Body — all post types */}
+        <div>
+          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-white/35">
+            {postType === "text" ? "Details" : "Caption"}{" "}
+            <span className="normal-case text-white/20">(optional)</span>
+          </label>
+          <textarea
+            value={body}
+            onChange={(e) => setBody(e.target.value)}
+            placeholder={
+              postType === "text"
+                ? "Share more context, ask a question, or start a conversation..."
+                : "Add a caption or description..."
+            }
+            rows={postType === "text" ? 6 : 3}
+            className="w-full resize-y rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 text-sm leading-relaxed text-white outline-none placeholder:text-white/20 focus:border-blue-500/30"
+          />
+        </div>
 
         {error && <p className="text-sm text-red-400">{error}</p>}
 

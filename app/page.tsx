@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import Image from "next/image";
+import { NewPostPicker } from "@/components/new-post-picker";
 
 function Avatar({ username }: { username: string }) {
   const colors = ["#2563eb", "#7c3aed", "#0891b2", "#059669", "#d97706"];
@@ -29,28 +30,36 @@ function timeAgo(date: string) {
 export default async function Home() {
   const supabase = await createClient();
 
-  const { data: posts } = await supabase
-    .from("posts")
-    .select("*, profiles(username), comments(count), cities(name, slug)")
-    .order("created_at", { ascending: false })
-    .limit(50);
+  const [{ data: posts }, { data: cities }] = await Promise.all([
+    supabase
+      .from("posts")
+      .select("*, profiles(username), comments(count), cities(name, slug)")
+      .order("created_at", { ascending: false })
+      .limit(50),
+    supabase.from("cities").select("name, slug, state").order("name"),
+  ]);
 
   return (
     <div className="mx-auto max-w-2xl px-6 py-12">
-      <div className="mb-8 flex items-center gap-4">
-        <Image
-          src="/logo.png"
-          alt="CityDiscuss"
-          width={48}
-          height={48}
-          className="rounded-xl"
-        />
-        <div>
-          <h1 className="text-2xl font-extrabold tracking-tight">
-            CityDiscuss
-          </h1>
-          <p className="text-sm text-white/35">Latest posts from every city</p>
+      <div className="mb-8 flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <Image
+            src="/logo.png"
+            alt="CityDiscuss"
+            width={48}
+            height={48}
+            className="rounded-xl"
+          />
+          <div>
+            <h1 className="text-2xl font-extrabold tracking-tight">
+              CityDiscuss
+            </h1>
+            <p className="text-sm text-white/35">
+              Latest posts from every city
+            </p>
+          </div>
         </div>
+        <NewPostPicker cities={cities ?? []} />
       </div>
 
       <div className="flex flex-col gap-0.5">
@@ -132,30 +141,18 @@ export default async function Home() {
         <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-white/25">
           Browse by city
         </p>
-        <BrowseCities />
+        <div className="flex flex-wrap gap-2">
+          {cities?.map((city) => (
+            <Link
+              key={city.slug}
+              href={`/city/${city.slug}`}
+              className="rounded-lg border border-white/[0.07] bg-white/[0.02] px-3 py-1.5 text-sm text-white/45 transition-colors hover:border-white/15 hover:text-white/70"
+            >
+              {city.name}
+            </Link>
+          ))}
+        </div>
       </div>
-    </div>
-  );
-}
-
-async function BrowseCities() {
-  const supabase = await createClient();
-  const { data: cities } = await supabase
-    .from("cities")
-    .select("name, slug, state")
-    .order("name");
-
-  return (
-    <div className="flex flex-wrap gap-2">
-      {cities?.map((city) => (
-        <Link
-          key={city.slug}
-          href={`/city/${city.slug}`}
-          className="rounded-lg border border-white/[0.07] bg-white/[0.02] px-3 py-1.5 text-sm text-white/45 transition-colors hover:border-white/15 hover:text-white/70"
-        >
-          {city.name}
-        </Link>
-      ))}
     </div>
   );
 }
