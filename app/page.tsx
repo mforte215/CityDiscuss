@@ -59,7 +59,7 @@ export default async function Home() {
             </p>
           </div>
         </div>
-        <NewPostPicker cities={cities ?? []} />
+        <NewPostPicker />
       </div>
 
       <div className="flex flex-col gap-0.5">
