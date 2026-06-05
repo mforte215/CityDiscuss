@@ -64,6 +64,19 @@ export function NavAuth() {
     </Link>
   );
 
+  const searchLink = (
+    <Link
+      href="/search"
+      aria-label="Search"
+      className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-700 dark:text-white/35 dark:hover:bg-white/[0.06] dark:hover:text-white/70"
+    >
+      <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="11" cy="11" r="8" />
+        <path d="m21 21-4.35-4.35" />
+      </svg>
+    </Link>
+  );
+
   if (user) {
     const displayName =
       username ??
@@ -74,6 +87,7 @@ export function NavAuth() {
     return (
       <div className="flex items-center gap-1">
         {forumLink}
+        {searchLink}
         <Link
           href={`/profile/${displayName}`}
           className="rounded-lg px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-white/70 dark:hover:bg-white/[0.06]"
@@ -111,6 +125,7 @@ export function NavAuth() {
   return (
     <div className="flex items-center gap-1">
       {forumLink}
+      {searchLink}
       <Link
         href="/auth/login"
         className="rounded-lg border border-gray-200 px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-100 dark:border-white/10 dark:text-white/70 dark:hover:bg-white/5"

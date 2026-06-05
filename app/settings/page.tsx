@@ -1,5 +1,8 @@
 "use client";
 
+// Suppress search engine indexing for account settings
+export const dynamic = "force-dynamic";
+
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";

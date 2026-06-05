@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -6,6 +7,27 @@ import { VoteButton } from "@/components/vote-button";
 import { DeleteEditButtons } from "@/components/delete-edit-buttons";
 import { DeleteCommentButton } from "@/components/delete-comment-button";
 import { Avatar } from "@/components/avatar";
+
+export async function generateMetadata(props: {
+  params: Promise<{ slug: string; postId: string }>;
+}): Promise<Metadata> {
+  const { postId } = await props.params;
+  const supabase = await createClient();
+  const { data: post } = await supabase
+    .from("posts")
+    .select("title, body")
+    .eq("id", postId)
+    .single();
+  if (!post) return {};
+  return {
+    title: `${post.title} — CityDiscuss`,
+    description: post.body ? post.body.slice(0, 150) : undefined,
+    openGraph: {
+      title: post.title,
+      description: post.body ? post.body.slice(0, 150) : undefined,
+    },
+  };
+}
 
 function youtubeEmbedUrl(url: string): string | null {
   const ytMatch = url.match(

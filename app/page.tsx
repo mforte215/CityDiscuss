@@ -97,7 +97,7 @@ export default async function Home() {
             <div className="mb-2 flex items-center gap-2.5 text-xs text-gray-400 dark:text-white/30">
               {featured.cities && (
                 <span className="font-semibold uppercase tracking-widest text-blue-500 dark:text-blue-400">
-                  {featured.cities.name}
+                  {(featured.cities as any).name}
                 </span>
               )}
               {featured.cities && <span>·</span>}
@@ -114,7 +114,7 @@ export default async function Home() {
             <p className="text-sm text-gray-400 dark:text-white/30">
               By{" "}
               <span className="font-medium text-gray-600 dark:text-white/50">
-                @{featured.profiles?.username ?? "staff"}
+                @{(featured.profiles as any)?.username ?? "staff"}
               </span>
             </p>
           </div>

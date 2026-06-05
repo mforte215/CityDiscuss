@@ -1,3 +1,10 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy — CityDiscuss",
+  description: "How CityDiscuss collects, uses, and protects your data.",
+};
+
 export default function PrivacyPage() {
   return (
     <div className="mx-auto max-w-2xl px-6 py-16">

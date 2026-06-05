@@ -1,7 +1,19 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Avatar } from "@/components/avatar";
+
+export async function generateMetadata(props: {
+  params: Promise<{ username: string }>;
+}): Promise<Metadata> {
+  const { username } = await props.params;
+  return {
+    title: `@${username} — CityDiscuss`,
+    description: `View ${username}'s posts and activity on CityDiscuss.`,
+    openGraph: { title: `@${username} — CityDiscuss` },
+  };
+}
 
 function timeAgo(date: string) {
   const seconds = Math.floor((Date.now() - new Date(date).getTime()) / 1000);

@@ -1,9 +1,47 @@
+import { cache } from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Avatar } from "@/components/avatar";
 import { ArticleCommentForm } from "@/components/article-comment-form";
 import { DeleteArticleCommentButton } from "@/components/delete-article-comment-button";
+
+// Cached so generateMetadata and the page share one DB round-trip
+const getArticle = cache(async (slug: string) => {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("articles")
+    .select("*, profiles(username, avatar_url), cities(name, slug)")
+    .eq("slug", slug)
+    .not("published_at", "is", null)
+    .single();
+  return data;
+});
+
+export async function generateMetadata(props: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await props.params;
+  const article = await getArticle(slug);
+  if (!article) return {};
+  return {
+    title: `${article.title} — CityDiscuss`,
+    description: article.subtitle ?? undefined,
+    openGraph: {
+      title: article.title,
+      description: article.subtitle ?? undefined,
+      images: article.cover_url ? [{ url: article.cover_url }] : [],
+      type: "article",
+    },
+    twitter: {
+      card: article.cover_url ? "summary_large_image" : "summary",
+      title: article.title,
+      description: article.subtitle ?? undefined,
+      images: article.cover_url ? [article.cover_url] : [],
+    },
+  };
+}
 
 function timeAgo(date: string) {
   const seconds = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
@@ -29,18 +67,8 @@ export default async function ArticlePage({
   const { slug } = await params;
   const supabase = await createClient();
 
-  const [
-    { data: article },
-    {
-      data: { user },
-    },
-  ] = await Promise.all([
-    supabase
-      .from("articles")
-      .select("*, profiles(username, avatar_url), cities(name, slug)")
-      .eq("slug", slug)
-      .not("published_at", "is", null)
-      .single(),
+  const [article, { data: { user } }] = await Promise.all([
+    getArticle(slug),
     supabase.auth.getUser(),
   ]);
 

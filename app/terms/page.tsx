@@ -1,3 +1,10 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Terms of Service — CityDiscuss",
+  description: "The rules and guidelines for using CityDiscuss.",
+};
+
 export default function TermsPage() {
   return (
     <div className="mx-auto max-w-2xl px-6 py-16">

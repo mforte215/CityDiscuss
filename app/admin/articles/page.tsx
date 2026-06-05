@@ -64,9 +64,9 @@ export default async function AdminArticlesPage() {
                 </p>
               </div>
               <p className="mt-0.5 truncate text-xs text-gray-400 dark:text-white/30">
-                {article.cities?.name && (
+                {(article.cities as any)?.name && (
                   <span className="mr-2 font-medium text-blue-500 dark:text-blue-400">
-                    {article.cities.name}
+                    {(article.cities as any).name}
                   </span>
                 )}
                 {article.subtitle}

@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { AuthForm } from "@/components/auth-form";
+
+export const metadata: Metadata = {
+  title: "Create account — CityDiscuss",
+  description: "Sign up and start discussing what matters in your city.",
+};
 
 export default function SignupPage() {
   return (

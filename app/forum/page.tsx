@@ -1,8 +1,14 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { VoteButton } from "@/components/vote-button";
 import { Avatar } from "@/components/avatar";
 import { CityDropdown } from "@/components/city-dropdown";
+
+export const metadata: Metadata = {
+  title: "Forum — CityDiscuss",
+  description: "Browse and join local discussions from cities across the country.",
+};
 
 function timeAgo(date: string) {
   const seconds = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
@@ -22,12 +28,15 @@ function hotScore(score: number, createdAt: string) {
 
 type Sort = "hot" | "new" | "top";
 
+const PER_PAGE = 25;
+
 export default async function ForumPage(props: {
-  searchParams: Promise<{ sort?: string; city?: string }>;
+  searchParams: Promise<{ sort?: string; city?: string; page?: string }>;
 }) {
-  const { sort: rawSort, city: cityFilter } = await props.searchParams;
+  const { sort: rawSort, city: cityFilter, page: rawPage } = await props.searchParams;
   const sort: Sort =
     rawSort === "top" ? "top" : rawSort === "new" ? "new" : "hot";
+  const page = Math.max(1, parseInt(rawPage ?? "1", 10) || 1);
 
   const supabase = await createClient();
 
@@ -44,7 +53,7 @@ export default async function ForumPage(props: {
         "*, profiles(username, avatar_url), comments(count), post_votes(value), cities(name, slug)",
       )
       .order("created_at", { ascending: false })
-      .limit(100),
+      .limit(500), // fetch enough to sort, then paginate in JS
     supabase.from("cities").select("name, slug").order("name"),
     supabase.auth.getUser(),
   ]);
@@ -97,6 +106,11 @@ export default async function ForumPage(props: {
       }
     }
   }
+
+  const totalPosts = sorted.length;
+  const totalPages = Math.max(1, Math.ceil(totalPosts / PER_PAGE));
+  const currentPage = Math.min(page, totalPages);
+  const paginated = sorted.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE);
 
   const sortTabs: { label: string; value: Sort }[] = [
     { label: "🔥 Hot", value: "hot" },
@@ -156,15 +170,16 @@ export default async function ForumPage(props: {
 
       {/* Stats line */}
       <p className="mb-3 text-xs text-gray-400 dark:text-white/25">
-        {sorted.length} {sorted.length === 1 ? "post" : "posts"}
+        {totalPosts} {totalPosts === 1 ? "post" : "posts"}
         {cityFilter &&
           cities &&
           ` in ${cities.find((c) => c.slug === cityFilter)?.name}`}
+        {totalPages > 1 && ` · page ${currentPage} of ${totalPages}`}
       </p>
 
       {/* Post list */}
       <div className="flex flex-col divide-y divide-gray-100 dark:divide-white/[0.04]">
-        {sorted.map((post: any) => {
+        {paginated.map((post: any) => {
           const username = post.profiles?.username || "anonymous";
           const commentCount = post.comments?.[0]?.count || 0;
           const userVote = userVotesMap[post.id] ?? 0;
@@ -265,7 +280,7 @@ export default async function ForumPage(props: {
           );
         })}
 
-        {sorted.length === 0 && (
+        {totalPosts === 0 && (
           <div className="py-20 text-center text-sm text-gray-400 dark:text-white/25">
             No posts yet.{" "}
             <Link href="/new" className="text-blue-500 hover:underline">
@@ -274,6 +289,33 @@ export default async function ForumPage(props: {
           </div>
         )}
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="mt-6 flex items-center justify-between">
+          {currentPage > 1 ? (
+            <Link
+              href={`/forum?sort=${sort}${cityFilter ? `&city=${cityFilter}` : ""}&page=${currentPage - 1}`}
+              className="rounded-xl border border-gray-200 px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 dark:border-white/10 dark:text-white/50 dark:hover:bg-white/5"
+            >
+              ← Previous
+            </Link>
+          ) : <div />}
+
+          <span className="text-xs text-gray-400 dark:text-white/25">
+            {currentPage} / {totalPages}
+          </span>
+
+          {currentPage < totalPages ? (
+            <Link
+              href={`/forum?sort=${sort}${cityFilter ? `&city=${cityFilter}` : ""}&page=${currentPage + 1}`}
+              className="rounded-xl border border-gray-200 px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 dark:border-white/10 dark:text-white/50 dark:hover:bg-white/5"
+            >
+              Next →
+            </Link>
+          ) : <div />}
+        </div>
+      )}
 
       {/* City tag footer */}
       {cities && cities.length > 0 && (

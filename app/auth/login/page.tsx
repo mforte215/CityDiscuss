@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { AuthForm } from "@/components/auth-form";
+
+export const metadata: Metadata = {
+  title: "Log in — CityDiscuss",
+  description: "Log in to join the conversation in your city.",
+};
 
 export default function LoginPage() {
   return (

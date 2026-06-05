@@ -1,8 +1,30 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { VoteButton } from "@/components/vote-button";
 import { Avatar } from "@/components/avatar";
+
+export async function generateMetadata(props: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await props.params;
+  const supabase = await createClient();
+  const { data: city } = await supabase
+    .from("cities")
+    .select("name, state")
+    .eq("slug", slug)
+    .single();
+  if (!city) return {};
+  return {
+    title: `${city.name} — CityDiscuss`,
+    description: `Local discussions, news, and community for ${city.name}, ${city.state}.`,
+    openGraph: {
+      title: `${city.name} Forum — CityDiscuss`,
+      description: `Join the conversation in ${city.name}, ${city.state}.`,
+    },
+  };
+}
 
 function timeAgo(date: string) {
   const seconds = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
