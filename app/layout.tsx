@@ -15,7 +15,10 @@ export const metadata: Metadata = {
   description:
     "Real discussions about the places you live. No algorithms, no noise.",
   icons: {
-    icon: "/logo.png",
+    // favicon.ico in app/ is auto-detected — no entry needed
+    // apple-icon.png in app/ is auto-detected — no entry needed
+    // Fallback for browsers that don't pick up the file-based icons
+    shortcut: "/favicon.ico",
   },
 };
 
