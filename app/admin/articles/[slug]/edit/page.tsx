@@ -45,23 +45,14 @@ export default function EditArticlePage(props: {
         .from("profiles").select("is_admin").eq("id", user.id).single();
       if (!profile?.is_admin) { router.push("/"); return; }
 
-      const [{ data: article }, { data: tagData }, { data: articleTagData }] =
-        await Promise.all([
-          supabase.from("articles").select("*").eq("slug", slug).single(),
-          supabase.from("tags").select("id, name, slug").order("name"),
-          supabase
-            .from("article_tags")
-            .select("tag_id")
-            .eq("article_id",
-              // we need the article id — fetch it first then get tags
-              // workaround: fetch article first, use its id below
-              "placeholder"
-            ),
-        ]);
+      // Fetch article and available tags in parallel, then article's tags sequentially
+      const [{ data: article }, { data: tagData }] = await Promise.all([
+        supabase.from("articles").select("*").eq("slug", slug).single(),
+        supabase.from("tags").select("id, name, slug").order("name"),
+      ]);
 
       if (!article) { router.push("/admin/articles"); return; }
 
-      // Fetch article tags properly with the real article id
       const { data: realArticleTags } = await supabase
         .from("article_tags")
         .select("tag_id")

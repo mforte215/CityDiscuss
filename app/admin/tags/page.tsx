@@ -39,9 +39,10 @@ export default function AdminTagsPage() {
     setSaving(true);
     setError("");
     const supabase = createClient();
+    const capitalized = newName.trim().replace(/\b\w/g, (c) => c.toUpperCase());
     const { data, error: insertError } = await supabase
       .from("tags")
-      .insert({ name: newName.trim(), slug: slugify(newName.trim()) })
+      .insert({ name: capitalized, slug: slugify(newName.trim()) })
       .select()
       .single();
     if (insertError) {
@@ -97,6 +98,8 @@ export default function AdminTagsPage() {
         </div>
         {newName && (
           <p className="mt-1.5 text-xs text-gray-400 dark:text-white/25">
+            Will save as: <span className="font-medium text-gray-600 dark:text-white/50">{newName.trim().replace(/\b\w/g, (c) => c.toUpperCase())}</span>
+            <span className="mx-1.5">·</span>
             Slug: <span className="font-mono">{slugify(newName)}</span>
           </p>
         )}

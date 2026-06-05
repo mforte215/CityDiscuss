@@ -6,13 +6,14 @@ const BASE_URL = "https://www.citydiscuss.com";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const supabase = await createClient();
 
-  const [{ data: cities }, { data: articles }] = await Promise.all([
+  const [{ data: cities }, { data: articles }, { data: tags }] = await Promise.all([
     supabase.from("cities").select("slug"),
     supabase
       .from("articles")
       .select("slug, published_at")
       .not("published_at", "is", null)
       .order("published_at", { ascending: false }),
+    supabase.from("tags").select("slug"),
   ]);
 
   // Static routes
@@ -49,5 +50,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }),
   );
 
-  return [...staticRoutes, ...articleRoutes, ...cityRoutes];
+  // Tag pages
+  const tagRoutes: MetadataRoute.Sitemap = (tags ?? []).map((tag) => ({
+    url: `${BASE_URL}/tags/${tag.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "daily" as const,
+    priority: 0.6,
+  }));
+
+  return [...staticRoutes, ...articleRoutes, ...cityRoutes, ...tagRoutes];
 }
