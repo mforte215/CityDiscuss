@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { CoverUpload } from "@/components/cover-upload";
+import { RichTextEditor } from "@/components/rich-text-editor";
 
 type City = { name: string; slug: string; id: string };
 
@@ -216,16 +217,16 @@ export default function NewArticlePage() {
         {/* Body */}
         <div>
           <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-white/35">
-            Body{" "}
-            <span className="normal-case text-gray-300 dark:text-white/20">(HTML)</span>
+            Body
           </label>
-          <textarea
-            value={body}
-            onChange={(e) => setBody(e.target.value)}
-            placeholder="<p>Write your article here...</p>"
-            rows={20}
-            className="w-full resize-y rounded-xl border border-gray-200 bg-gray-100 px-4 py-3 font-mono text-sm leading-relaxed text-gray-700 outline-none placeholder:text-gray-400 focus:border-blue-500/50 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-white/70 dark:placeholder:text-white/20 dark:focus:border-blue-500/30"
-          />
+          {userId && (
+            <RichTextEditor
+              content={body}
+              onChange={setBody}
+              userId={userId}
+              placeholder="Write your article here…"
+            />
+          )}
         </div>
 
         {error && <p className="text-sm text-red-500 dark:text-red-400">{error}</p>}

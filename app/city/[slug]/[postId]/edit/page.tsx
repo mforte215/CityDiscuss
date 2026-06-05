@@ -3,6 +3,7 @@
 import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { RichTextEditor } from "@/components/rich-text-editor";
 
 export default function EditPostPage(props: {
   params: Promise<{ slug: string; postId: string }>;
@@ -102,12 +103,14 @@ export default function EditPostPage(props: {
           <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-white/35">
             Details
           </label>
-          <textarea
-            value={body}
-            onChange={(e) => setBody(e.target.value)}
-            rows={6}
-            className="w-full resize-y rounded-xl border border-gray-200 bg-gray-100 px-4 py-3 text-sm leading-relaxed text-gray-900 outline-none focus:border-blue-500/50 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-white dark:focus:border-blue-500/30"
-          />
+          {!loading && (
+            <RichTextEditor
+              key={postId}
+              content={body}
+              onChange={setBody}
+              placeholder="Add more context or detail…"
+            />
+          )}
         </div>
 
         {error && <p className="text-sm text-red-500 dark:text-red-400">{error}</p>}
