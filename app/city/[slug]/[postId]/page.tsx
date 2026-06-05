@@ -5,6 +5,7 @@ import { CommentForm } from "@/components/comment-form";
 import { VoteButton } from "@/components/vote-button";
 import { DeleteEditButtons } from "@/components/delete-edit-buttons";
 import { DeleteCommentButton } from "@/components/delete-comment-button";
+import { Avatar } from "@/components/avatar";
 
 function youtubeEmbedUrl(url: string): string | null {
   const ytMatch = url.match(
@@ -37,23 +38,6 @@ function VideoEmbed({ url }: { url: string }) {
   );
 }
 
-function Avatar({ username, size = 36 }: { username: string; size?: number }) {
-  const colors = ["#2563eb", "#7c3aed", "#0891b2", "#059669", "#d97706"];
-  const idx = username.charCodeAt(0) % colors.length;
-  return (
-    <div
-      className="flex shrink-0 items-center justify-center rounded-full font-semibold text-white"
-      style={{
-        width: size,
-        height: size,
-        background: colors[idx],
-        fontSize: size * 0.35,
-      }}
-    >
-      {username.slice(0, 2).toUpperCase()}
-    </div>
-  );
-}
 
 function timeAgo(date: string) {
   const seconds = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
@@ -83,12 +67,12 @@ export default async function PostPage({
   ] = await Promise.all([
     supabase
       .from("posts")
-      .select("*, user_id, profiles(username), post_votes(value)")
+      .select("*, user_id, profiles(username, avatar_url), post_votes(value)")
       .eq("id", postId)
       .single(),
     supabase
       .from("comments")
-      .select("*, profiles(username)")
+      .select("*, profiles(username, avatar_url)")
       .eq("post_id", postId)
       .order("created_at", { ascending: true }),
     supabase.auth.getUser(),
@@ -126,7 +110,7 @@ export default async function PostPage({
       {/* Post */}
       <div className="rounded-2xl border border-gray-200 bg-gray-50 px-6 py-5 dark:border-white/[0.06] dark:bg-white/[0.03]">
         <div className="mb-4 flex items-center gap-3">
-          <Avatar username={author} size={40} />
+          <Avatar username={author} avatarUrl={post.profiles?.avatar_url} size={40} />
           <div className="flex flex-1 items-center justify-between">
             <div>
               <Link
@@ -201,7 +185,7 @@ export default async function PostPage({
                 className="rounded-xl border border-gray-100 bg-gray-50 px-5 py-4 dark:border-white/5 dark:bg-white/[0.02]"
               >
                 <div className="mb-2 flex items-center gap-2.5">
-                  <Avatar username={cAuthor} size={28} />
+                  <Avatar username={cAuthor} avatarUrl={c.profiles?.avatar_url} size={28} />
                   <Link
                     href={`/profile/${cAuthor}`}
                     className="text-sm font-semibold text-gray-900 hover:text-blue-500 dark:text-white dark:hover:text-blue-400"

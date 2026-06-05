@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { CoverUpload } from "@/components/cover-upload";
 
 type City = { name: string; slug: string; id: string };
 
@@ -16,6 +17,7 @@ function slugify(text: string) {
 export default function NewArticlePage() {
   const router = useRouter();
   const [checking, setChecking] = useState(true);
+  const [userId, setUserId] = useState("");
   const [cities, setCities] = useState<City[]>([]);
   const [title, setTitle] = useState("");
   const [subtitle, setSubtitle] = useState("");
@@ -23,6 +25,7 @@ export default function NewArticlePage() {
   const [slugManual, setSlugManual] = useState(false);
   const [cityId, setCityId] = useState("");
   const [coverUrl, setCoverUrl] = useState("");
+  const [coverPosition, setCoverPosition] = useState("center");
   const [body, setBody] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -52,6 +55,7 @@ export default function NewArticlePage() {
         .order("name");
 
       if (cityData) setCities(cityData);
+      setUserId(user.id);
       setChecking(false);
     });
   }, [router]);
@@ -79,7 +83,8 @@ export default function NewArticlePage() {
       subtitle: subtitle.trim() || null,
       slug: slug.trim(),
       city_id: cityId || null,
-      cover_url: coverUrl.trim() || null,
+      cover_url: coverUrl || null,
+      cover_position: coverPosition,
       body: body.trim(),
       author_id: user!.id,
       published_at: publish ? new Date().toISOString() : null,
@@ -193,27 +198,19 @@ export default function NewArticlePage() {
           </select>
         </div>
 
-        {/* Cover image URL */}
+        {/* Cover photo */}
         <div>
           <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-white/35">
-            Cover image URL{" "}
+            Cover photo{" "}
             <span className="normal-case text-gray-300 dark:text-white/20">(optional)</span>
           </label>
-          <input
-            value={coverUrl}
-            onChange={(e) => setCoverUrl(e.target.value)}
-            placeholder="https://..."
-            className="w-full rounded-xl border border-gray-200 bg-gray-100 px-4 py-3 text-sm text-gray-900 outline-none placeholder:text-gray-400 focus:border-blue-500/50 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-white dark:placeholder:text-white/20 dark:focus:border-blue-500/30"
+          <CoverUpload
+            userId={userId}
+            coverUrl={coverUrl}
+            coverPosition={coverPosition}
+            onCoverUrl={setCoverUrl}
+            onCoverPosition={setCoverPosition}
           />
-          {coverUrl && (
-            <div className="mt-2 overflow-hidden rounded-xl border border-gray-200 dark:border-white/[0.07]">
-              <img
-                src={coverUrl}
-                alt="Cover preview"
-                className="max-h-48 w-full object-cover"
-              />
-            </div>
-          )}
         </div>
 
         {/* Body */}
@@ -229,9 +226,6 @@ export default function NewArticlePage() {
             rows={20}
             className="w-full resize-y rounded-xl border border-gray-200 bg-gray-100 px-4 py-3 font-mono text-sm leading-relaxed text-gray-700 outline-none placeholder:text-gray-400 focus:border-blue-500/50 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-white/70 dark:placeholder:text-white/20 dark:focus:border-blue-500/30"
           />
-          <p className="mt-1 text-xs text-gray-400 dark:text-white/25">
-            Paste HTML or write it directly. Tiptap editor coming next.
-          </p>
         </div>
 
         {error && <p className="text-sm text-red-500 dark:text-red-400">{error}</p>}

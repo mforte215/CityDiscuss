@@ -2,19 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { VoteButton } from "@/components/vote-button";
-
-function Avatar({ username }: { username: string }) {
-  const colors = ["#2563eb", "#7c3aed", "#0891b2", "#059669", "#d97706"];
-  const idx = username.charCodeAt(0) % colors.length;
-  return (
-    <div
-      className="flex shrink-0 items-center justify-center rounded-full text-xs font-semibold text-white"
-      style={{ width: 32, height: 32, background: colors[idx] }}
-    >
-      {username.slice(0, 2).toUpperCase()}
-    </div>
-  );
-}
+import { Avatar } from "@/components/avatar";
 
 function timeAgo(date: string) {
   const seconds = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
@@ -62,7 +50,7 @@ export default async function CityPage(props: {
 
   const { data: posts } = await supabase
     .from("posts")
-    .select("*, profiles(username), comments(count), post_votes(value)")
+    .select("*, profiles(username, avatar_url), comments(count), post_votes(value)")
     .eq("city_id", city.id);
 
   const scored = (posts ?? []).map((post: any) => ({
@@ -194,7 +182,7 @@ export default async function CityPage(props: {
                   </div>
                 ) : (
                   <div className="pointer-events-none">
-                    <Avatar username={username} />
+                    <Avatar username={username} avatarUrl={post.profiles?.avatar_url} />
                   </div>
                 )}
                 <div className="pointer-events-none min-w-0 flex-1">

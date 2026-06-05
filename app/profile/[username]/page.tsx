@@ -1,24 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-
-function Avatar({ username, size = 56 }: { username: string; size?: number }) {
-  const colors = ["#2563eb", "#7c3aed", "#0891b2", "#059669", "#d97706"];
-  const idx = username.charCodeAt(0) % colors.length;
-  return (
-    <div
-      className="flex shrink-0 items-center justify-center rounded-full font-bold text-white"
-      style={{
-        width: size,
-        height: size,
-        background: colors[idx],
-        fontSize: size * 0.35,
-      }}
-    >
-      {username.slice(0, 2).toUpperCase()}
-    </div>
-  );
-}
+import { Avatar } from "@/components/avatar";
 
 function timeAgo(date: string) {
   const seconds = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
@@ -75,7 +58,7 @@ export default async function ProfilePage({
     <div className="mx-auto max-w-2xl px-6 py-10">
       {/* Header */}
       <div className="mb-8 flex items-center gap-4">
-        <Avatar username={profile.username} size={56} />
+        <Avatar username={profile.username} avatarUrl={profile.avatar_url} size={56} />
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight text-gray-900 dark:text-white">
             {profile.username}

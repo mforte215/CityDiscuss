@@ -8,21 +8,36 @@ import { createClient } from "@/lib/supabase/client";
 export function NavAuth() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
+  const [username, setUsername] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const supabase = createClient();
 
-    supabase.auth.getUser().then(({ data: { user } }) => {
+    async function load() {
+      const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
-      setLoading(false);
-    });
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
+      if (user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("username")
+          .eq("id", user.id)
+          .single();
+        setUsername(profile?.username ?? null);
+      }
+
+      setLoading(false);
+    }
+
+    load();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user ?? null);
+        if (!session?.user) setUsername(null);
+      },
+    );
 
     return () => subscription.unsubscribe();
   }, []);
@@ -31,6 +46,7 @@ export function NavAuth() {
     const supabase = createClient();
     await supabase.auth.signOut();
     setUser(null);
+    setUsername(null);
     router.push("/");
     router.refresh();
   }
@@ -39,20 +55,52 @@ export function NavAuth() {
     return <div className="h-8 w-20" />;
   }
 
+  const forumLink = (
+    <Link
+      href="/forum"
+      className="rounded-lg px-3 py-1.5 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-800 dark:text-white/40 dark:hover:bg-white/[0.06] dark:hover:text-white/70"
+    >
+      Forum
+    </Link>
+  );
+
   if (user) {
+    const displayName =
+      username ??
+      user.user_metadata?.username ??
+      user.user_metadata?.full_name ??
+      user.email?.split("@")[0];
+
     return (
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-1">
+        {forumLink}
         <Link
-          href="/account"
-          className="text-sm text-gray-500 hover:text-gray-800 dark:text-white/50 dark:hover:text-white/80"
+          href={`/profile/${displayName}`}
+          className="rounded-lg px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-white/70 dark:hover:bg-white/[0.06]"
         >
-          {user.user_metadata?.username ||
-            user.user_metadata?.full_name ||
-            user.email?.split("@")[0]}
+          @{displayName}
+        </Link>
+        <Link
+          href="/settings"
+          aria-label="Settings"
+          className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-700 dark:text-white/35 dark:hover:bg-white/[0.06] dark:hover:text-white/70"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            className="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={1.75}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <circle cx="12" cy="12" r="3" />
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+          </svg>
         </Link>
         <button
           onClick={handleLogout}
-          className="rounded-lg border border-gray-200 px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-100 dark:border-white/10 dark:text-white/70 dark:hover:bg-white/5"
+          className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 dark:border-white/10 dark:text-white/60 dark:hover:bg-white/5"
         >
           Log out
         </button>
@@ -61,7 +109,8 @@ export function NavAuth() {
   }
 
   return (
-    <div className="flex gap-2">
+    <div className="flex items-center gap-1">
+      {forumLink}
       <Link
         href="/auth/login"
         className="rounded-lg border border-gray-200 px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-100 dark:border-white/10 dark:text-white/70 dark:hover:bg-white/5"
