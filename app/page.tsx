@@ -121,7 +121,7 @@ export default async function Home(props: {
       {featured && (
         <div className="group relative mb-10 overflow-hidden rounded-2xl border border-gray-200 bg-gray-50 transition-all hover:border-gray-300 hover:bg-gray-100 dark:border-white/[0.07] dark:bg-white/[0.02] dark:hover:border-white/[0.12] dark:hover:bg-white/[0.04]">
           {/* Overlay link covers the whole card */}
-          <Link href={`/articles/${featured.slug}`} className="absolute inset-0 z-0" aria-label={featured.title} />
+          <Link href={`/articles/${featured.slug}`} className="absolute inset-0 z-10" aria-label={featured.title} />
           {featured.cover_url && (
             <div className="aspect-[2.5/1] w-full overflow-hidden">
               <img
@@ -137,7 +137,7 @@ export default async function Home(props: {
               {((featured.article_tags as any[]) ?? []).map((at: any) =>
                 at.tags ? (
                   <Link key={at.tags.slug} href={`/?tag=${at.tags.slug}`}
-                    className="relative z-10 rounded-full bg-blue-50 px-2.5 py-0.5 text-[11px] font-semibold text-blue-600 hover:bg-blue-100 dark:bg-blue-500/10 dark:text-blue-400 dark:hover:bg-blue-500/20">
+                    className="relative z-20 rounded-full bg-blue-50 px-2.5 py-0.5 text-[11px] font-semibold text-blue-600 hover:bg-blue-100 dark:bg-blue-500/10 dark:text-blue-400 dark:hover:bg-blue-500/20">
                     {at.tags.name}
                   </Link>
                 ) : null,
@@ -170,7 +170,7 @@ export default async function Home(props: {
               key={article.slug}
               className="group relative flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-gray-50 transition-all hover:border-gray-300 hover:bg-gray-100 dark:border-white/[0.07] dark:bg-white/[0.02] dark:hover:border-white/[0.12] dark:hover:bg-white/[0.04]"
             >
-              <Link href={`/articles/${article.slug}`} className="absolute inset-0 z-0" aria-label={article.title} />
+              <Link href={`/articles/${article.slug}`} className="absolute inset-0 z-10" aria-label={article.title} />
               {article.cover_url ? (
                 <div className="aspect-video w-full overflow-hidden">
                   <img
@@ -190,7 +190,7 @@ export default async function Home(props: {
                   {((article.article_tags as any[]) ?? []).map((at: any) =>
                     at.tags ? (
                       <Link key={at.tags.slug} href={`/?tag=${at.tags.slug}`}
-                        className="relative z-10 rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-600 hover:bg-blue-100 dark:bg-blue-500/10 dark:text-blue-400 dark:hover:bg-blue-500/20">
+                        className="relative z-20 rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-600 hover:bg-blue-100 dark:bg-blue-500/10 dark:text-blue-400 dark:hover:bg-blue-500/20">
                         {at.tags.name}
                       </Link>
                     ) : null,
