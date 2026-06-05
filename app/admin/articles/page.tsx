@@ -25,9 +25,15 @@ export default async function AdminArticlesPage() {
   return (
     <div className="mx-auto max-w-3xl px-6 py-10">
       <div className="mb-8 flex items-center justify-between">
-        <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-          Articles
-        </h1>
+        <div className="flex items-center gap-3">
+          <Link href="/admin" className="text-sm text-gray-400 hover:text-gray-700 dark:text-white/30 dark:hover:text-white/60">
+            ← Dashboard
+          </Link>
+          <span className="text-gray-300 dark:text-white/15">/</span>
+          <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+            Articles
+          </h1>
+        </div>
         <Link
           href="/admin/articles/new"
           className="rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 px-4 py-2 text-sm font-semibold text-white"
