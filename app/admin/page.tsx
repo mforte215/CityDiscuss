@@ -150,10 +150,16 @@ export default async function AdminDashboard() {
         </div>
         <div className="flex items-center gap-2">
           <Link
+            href="/admin/cities"
+            className="rounded-xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 dark:border-white/10 dark:text-white/50 dark:hover:bg-white/5"
+          >
+            Cities
+          </Link>
+          <Link
             href="/admin/articles"
             className="rounded-xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 dark:border-white/10 dark:text-white/50 dark:hover:bg-white/5"
           >
-            Manage Articles
+            Articles
           </Link>
           <Link
             href="/"
