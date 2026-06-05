@@ -13,7 +13,7 @@ const getArticle = cache(async (slug: string) => {
   const supabase = await createClient();
   const { data } = await supabase
     .from("articles")
-    .select("*, profiles(username, avatar_url), cities(name, slug, id)")
+    .select("*, profiles(username, avatar_url), article_tags(tags(id, name, slug))")
     .eq("slug", slug)
     .not("published_at", "is", null)
     .single();
@@ -83,9 +83,14 @@ export default async function ArticlePage({
 
   if (!article) notFound();
 
-  const cityId = (article.cities as any)?.id ?? null;
+  // Extract tags for this article
+  const articleTags = ((article.article_tags as any[]) ?? [])
+    .map((at: any) => at.tags)
+    .filter(Boolean) as { id: string; name: string; slug: string }[];
 
-  // Fetch comments, admin check, and related articles in parallel
+  const tagIds = articleTags.map((t) => t.id);
+
+  // Fetch comments, admin check, and related articles (same tags) in parallel
   const [{ data: comments }, adminResult, { data: related }] = await Promise.all([
     supabase
       .from("article_comments")
@@ -95,11 +100,11 @@ export default async function ArticlePage({
     user
       ? supabase.from("profiles").select("is_admin").eq("id", user.id).single()
       : Promise.resolve({ data: null }),
-    cityId
+    tagIds.length > 0
       ? supabase
           .from("articles")
-          .select("title, subtitle, slug, cover_url, cover_position, published_at")
-          .eq("city_id", cityId)
+          .select("title, subtitle, slug, cover_url, cover_position, published_at, article_tags!inner(tag_id)")
+          .in("article_tags.tag_id", tagIds)
           .neq("slug", slug)
           .not("published_at", "is", null)
           .order("published_at", { ascending: false })
@@ -141,13 +146,18 @@ export default async function ArticlePage({
 
       {/* Header */}
       <div className="mb-8">
-        {article.cities && (
-          <Link
-            href={`/city/${(article.cities as any).slug}`}
-            className="mb-3 inline-block text-xs font-semibold uppercase tracking-widest text-blue-500 hover:text-blue-600 dark:text-blue-400/80 dark:hover:text-blue-400"
-          >
-            {(article.cities as any).name}
-          </Link>
+        {articleTags.length > 0 && (
+          <div className="mb-3 flex flex-wrap gap-2">
+            {articleTags.map((tag) => (
+              <Link
+                key={tag.id}
+                href={`/tags/${tag.slug}`}
+                className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-600 hover:bg-blue-100 dark:bg-blue-500/10 dark:text-blue-400 dark:hover:bg-blue-500/20"
+              >
+                {tag.name}
+              </Link>
+            ))}
+          </div>
         )}
         <h1 className="mb-3 text-4xl font-extrabold leading-tight tracking-[-0.03em] text-gray-900 dark:text-white">
           {article.title}
@@ -221,7 +231,7 @@ export default async function ArticlePage({
       {related && related.length > 0 && (
         <div className="mt-14 border-t border-gray-100 pt-10 dark:border-white/[0.06]">
           <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-white/30">
-            More from {(article.cities as any)?.name ?? "CityDiscuss"}
+            Related articles
           </p>
           <div className="grid gap-3 sm:grid-cols-3">
             {related.map((r: any) => (

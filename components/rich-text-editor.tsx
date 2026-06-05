@@ -362,6 +362,8 @@ export function RichTextEditor({
   userId?: string;
   placeholder?: string;
 }) {
+  const [ready, setReady] = useState(false);
+
   const editor = useEditor({
     immediatelyRender: true,
     extensions: [
@@ -378,6 +380,7 @@ export function RichTextEditor({
       ImageExtension.configure({ inline: false }),
     ],
     content,
+    onCreate: () => setReady(true),
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML());
     },
@@ -395,7 +398,7 @@ export function RichTextEditor({
 
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.08] dark:bg-white/[0.02]">
-      <Toolbar editor={editor} userId={userId} />
+      {ready && <Toolbar editor={editor} userId={userId} />}
       <div className="tiptap-content">
         <EditorContent editor={editor} />
       </div>

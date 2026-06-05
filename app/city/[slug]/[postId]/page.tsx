@@ -21,10 +21,10 @@ export async function generateMetadata(props: {
   if (!post) return {};
   return {
     title: `${post.title} — CityDiscuss`,
-    description: post.body ? post.body.slice(0, 150) : undefined,
+    description: post.body ? post.body.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 150) : undefined,
     openGraph: {
       title: post.title,
-      description: post.body ? post.body.slice(0, 150) : undefined,
+      description: post.body ? post.body.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 150) : undefined,
     },
   };
 }
@@ -176,9 +176,21 @@ export default async function PostPage({
         )}
 
         {post.body && (
-          <p className="text-[15px] leading-relaxed text-gray-600 dark:text-white/55">
-            {post.body}
-          </p>
+          <div
+            className="prose prose-sm max-w-none
+              dark:prose-invert
+              prose-p:leading-relaxed prose-p:text-gray-600 prose-p:mb-3
+              prose-headings:font-bold prose-headings:tracking-tight
+              prose-a:text-blue-500 prose-a:no-underline hover:prose-a:underline
+              prose-blockquote:border-blue-500
+              prose-code:text-sm
+              prose-img:rounded-xl
+              dark:prose-p:text-white/55
+              dark:prose-headings:text-white
+              dark:prose-strong:text-white
+              dark:prose-blockquote:text-white/50"
+            dangerouslySetInnerHTML={{ __html: post.body }}
+          />
         )}
 
         {/* Vote row */}

@@ -18,20 +18,31 @@ function timeAgo(date: string) {
   });
 }
 
-export default async function Home() {
+export default async function Home(props: {
+  searchParams: Promise<{ tag?: string }>;
+}) {
+  const { tag: tagFilter } = await props.searchParams;
   const supabase = await createClient();
 
-  const [{ data: articles }, { data: cities }] = await Promise.all([
+  const [{ data: allArticles }, { data: cities }, { data: allTags }] = await Promise.all([
     supabase
       .from("articles")
-      .select("title, subtitle, slug, cover_url, cover_position, published_at, profiles(username), cities(name, slug)")
+      .select("title, subtitle, slug, cover_url, cover_position, published_at, profiles(username), article_tags(tags(id, name, slug))")
       .not("published_at", "is", null)
       .order("published_at", { ascending: false })
-      .limit(20),
+      .limit(50),
     supabase.from("cities").select("name, slug, state").order("name"),
+    supabase.from("tags").select("id, name, slug").order("name"),
   ]);
 
-  const [featured, ...rest] = articles ?? [];
+  // Filter by tag client-side (simple and avoids complex nested Supabase filters)
+  const articles = tagFilter
+    ? (allArticles ?? []).filter((a: any) =>
+        (a.article_tags as any[])?.some((at: any) => at.tags?.slug === tagFilter),
+      ).slice(0, 20)
+    : (allArticles ?? []).slice(0, 20);
+
+  const [featured, ...rest] = articles;
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-12">
@@ -71,6 +82,35 @@ export default async function Home() {
         </div>
       </div>
 
+      {/* Tag filter strip */}
+      {allTags && allTags.length > 0 && (
+        <div className="mb-8 flex flex-wrap gap-2">
+          <Link
+            href="/"
+            className={`rounded-full px-3 py-1 text-sm font-medium transition-colors ${
+              !tagFilter
+                ? "bg-blue-500 text-white"
+                : "border border-gray-200 bg-gray-50 text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:border-white/[0.08] dark:bg-white/[0.02] dark:text-white/40 dark:hover:border-white/15 dark:hover:text-white/60"
+            }`}
+          >
+            All
+          </Link>
+          {allTags.map((tag) => (
+            <Link
+              key={tag.slug}
+              href={`/?tag=${tag.slug}`}
+              className={`rounded-full px-3 py-1 text-sm font-medium transition-colors ${
+                tagFilter === tag.slug
+                  ? "bg-blue-500 text-white"
+                  : "border border-gray-200 bg-gray-50 text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:border-white/[0.08] dark:bg-white/[0.02] dark:text-white/40 dark:hover:border-white/15 dark:hover:text-white/60"
+              }`}
+            >
+              {tag.name}
+            </Link>
+          ))}
+        </div>
+      )}
+
       {articles && articles.length === 0 && (
         <div className="py-32 text-center text-sm text-gray-400 dark:text-white/25">
           No articles published yet.
@@ -79,10 +119,9 @@ export default async function Home() {
 
       {/* Featured article */}
       {featured && (
-        <Link
-          href={`/articles/${featured.slug}`}
-          className="group mb-10 block overflow-hidden rounded-2xl border border-gray-200 bg-gray-50 transition-all hover:border-gray-300 hover:bg-gray-100 dark:border-white/[0.07] dark:bg-white/[0.02] dark:hover:border-white/[0.12] dark:hover:bg-white/[0.04]"
-        >
+        <div className="group relative mb-10 overflow-hidden rounded-2xl border border-gray-200 bg-gray-50 transition-all hover:border-gray-300 hover:bg-gray-100 dark:border-white/[0.07] dark:bg-white/[0.02] dark:hover:border-white/[0.12] dark:hover:bg-white/[0.04]">
+          {/* Overlay link covers the whole card */}
+          <Link href={`/articles/${featured.slug}`} className="absolute inset-0 z-0" aria-label={featured.title} />
           {featured.cover_url && (
             <div className="aspect-[2.5/1] w-full overflow-hidden">
               <img
@@ -93,15 +132,17 @@ export default async function Home() {
               />
             </div>
           )}
-          <div className="px-7 py-6">
-            <div className="mb-2 flex items-center gap-2.5 text-xs text-gray-400 dark:text-white/30">
-              {featured.cities && (
-                <span className="font-semibold uppercase tracking-widest text-blue-500 dark:text-blue-400">
-                  {(featured.cities as any).name}
-                </span>
+          <div className="relative px-7 py-6">
+            <div className="mb-2 flex flex-wrap items-center gap-2">
+              {((featured.article_tags as any[]) ?? []).map((at: any) =>
+                at.tags ? (
+                  <Link key={at.tags.slug} href={`/?tag=${at.tags.slug}`}
+                    className="relative z-10 rounded-full bg-blue-50 px-2.5 py-0.5 text-[11px] font-semibold text-blue-600 hover:bg-blue-100 dark:bg-blue-500/10 dark:text-blue-400 dark:hover:bg-blue-500/20">
+                    {at.tags.name}
+                  </Link>
+                ) : null,
               )}
-              {featured.cities && <span>·</span>}
-              <span>{timeAgo(featured.published_at)}</span>
+              <span className="text-xs text-gray-400 dark:text-white/40">{timeAgo(featured.published_at)}</span>
             </div>
             <h2 className="mb-2 text-2xl font-extrabold leading-snug tracking-[-0.02em] text-gray-900 dark:text-white sm:text-3xl">
               {featured.title}
@@ -118,18 +159,18 @@ export default async function Home() {
               </span>
             </p>
           </div>
-        </Link>
+        </div>
       )}
 
       {/* Article grid */}
       {rest.length > 0 && (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {rest.map((article: any) => (
-            <Link
+            <div
               key={article.slug}
-              href={`/articles/${article.slug}`}
-              className="group flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-gray-50 transition-all hover:border-gray-300 hover:bg-gray-100 dark:border-white/[0.07] dark:bg-white/[0.02] dark:hover:border-white/[0.12] dark:hover:bg-white/[0.04]"
+              className="group relative flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-gray-50 transition-all hover:border-gray-300 hover:bg-gray-100 dark:border-white/[0.07] dark:bg-white/[0.02] dark:hover:border-white/[0.12] dark:hover:bg-white/[0.04]"
             >
+              <Link href={`/articles/${article.slug}`} className="absolute inset-0 z-0" aria-label={article.title} />
               {article.cover_url ? (
                 <div className="aspect-video w-full overflow-hidden">
                   <img
@@ -144,15 +185,17 @@ export default async function Home() {
                   <span className="text-3xl opacity-30">📰</span>
                 </div>
               )}
-              <div className="flex flex-1 flex-col px-4 py-4">
-                <div className="mb-1.5 flex items-center gap-2 text-[11px] text-gray-400 dark:text-white/30">
-                  {article.cities && (
-                    <span className="font-semibold uppercase tracking-widest text-blue-500 dark:text-blue-400">
-                      {article.cities.name}
-                    </span>
+              <div className="relative flex flex-1 flex-col px-4 py-4">
+                <div className="mb-1.5 flex flex-wrap items-center gap-1.5">
+                  {((article.article_tags as any[]) ?? []).map((at: any) =>
+                    at.tags ? (
+                      <Link key={at.tags.slug} href={`/?tag=${at.tags.slug}`}
+                        className="relative z-10 rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-600 hover:bg-blue-100 dark:bg-blue-500/10 dark:text-blue-400 dark:hover:bg-blue-500/20">
+                        {at.tags.name}
+                      </Link>
+                    ) : null,
                   )}
-                  {article.cities && <span>·</span>}
-                  <span>{timeAgo(article.published_at)}</span>
+                  <span className="text-[11px] text-gray-400 dark:text-white/30">{timeAgo(article.published_at)}</span>
                 </div>
                 <h3 className="mb-1 text-[15px] font-bold leading-snug tracking-[-0.01em] text-gray-900 dark:text-white">
                   {article.title}
@@ -166,7 +209,7 @@ export default async function Home() {
                   @{article.profiles?.username ?? "staff"}
                 </p>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       )}
