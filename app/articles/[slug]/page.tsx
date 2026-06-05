@@ -6,13 +6,14 @@ import { createClient } from "@/lib/supabase/server";
 import { Avatar } from "@/components/avatar";
 import { ArticleCommentForm } from "@/components/article-comment-form";
 import { DeleteArticleCommentButton } from "@/components/delete-article-comment-button";
+import { ShareButton } from "@/components/share-button";
 
 // Cached so generateMetadata and the page share one DB round-trip
 const getArticle = cache(async (slug: string) => {
   const supabase = await createClient();
   const { data } = await supabase
     .from("articles")
-    .select("*, profiles(username, avatar_url), cities(name, slug)")
+    .select("*, profiles(username, avatar_url), cities(name, slug, id)")
     .eq("slug", slug)
     .not("published_at", "is", null)
     .single();
@@ -59,6 +60,14 @@ function timeAgo(date: string) {
   });
 }
 
+/** Strip HTML tags and count words to estimate reading time */
+function readingTime(html: string): string {
+  const text = html.replace(/<[^>]+>/g, " ");
+  const words = text.trim().split(/\s+/).filter(Boolean).length;
+  const minutes = Math.max(1, Math.round(words / 238)); // avg reading speed
+  return `${minutes} min read`;
+}
+
 export default async function ArticlePage({
   params,
 }: {
@@ -74,20 +83,28 @@ export default async function ArticlePage({
 
   if (!article) notFound();
 
-  // Fetch comments + commenter profiles in parallel with admin check
-  const [{ data: comments }, adminResult] = await Promise.all([
+  const cityId = (article.cities as any)?.id ?? null;
+
+  // Fetch comments, admin check, and related articles in parallel
+  const [{ data: comments }, adminResult, { data: related }] = await Promise.all([
     supabase
       .from("article_comments")
       .select("*, profiles(username, avatar_url)")
       .eq("article_id", article.id)
       .order("created_at", { ascending: true }),
     user
-      ? supabase
-          .from("profiles")
-          .select("is_admin")
-          .eq("id", user.id)
-          .single()
+      ? supabase.from("profiles").select("is_admin").eq("id", user.id).single()
       : Promise.resolve({ data: null }),
+    cityId
+      ? supabase
+          .from("articles")
+          .select("title, subtitle, slug, cover_url, cover_position, published_at")
+          .eq("city_id", cityId)
+          .neq("slug", slug)
+          .not("published_at", "is", null)
+          .order("published_at", { ascending: false })
+          .limit(3)
+      : Promise.resolve({ data: [] }),
   ]);
 
   const isAdmin = !!(adminResult as any)?.data?.is_admin;
@@ -96,6 +113,8 @@ export default async function ArticlePage({
     "en-US",
     { month: "long", day: "numeric", year: "numeric" },
   );
+
+  const readTime = article.body ? readingTime(article.body) : null;
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-12">
@@ -107,24 +126,27 @@ export default async function ArticlePage({
         >
           ← Back
         </Link>
-        {isAdmin && (
-          <Link
-            href={`/admin/articles/${slug}/edit`}
-            className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-500 hover:bg-gray-100 dark:border-white/10 dark:text-white/40 dark:hover:bg-white/5"
-          >
-            Edit article
-          </Link>
-        )}
+        <div className="flex items-center gap-2">
+          <ShareButton title={article.title} />
+          {isAdmin && (
+            <Link
+              href={`/admin/articles/${slug}/edit`}
+              className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-500 hover:bg-gray-100 dark:border-white/10 dark:text-white/40 dark:hover:bg-white/5"
+            >
+              Edit article
+            </Link>
+          )}
+        </div>
       </div>
 
       {/* Header */}
       <div className="mb-8">
         {article.cities && (
           <Link
-            href={`/city/${article.cities.slug}`}
+            href={`/city/${(article.cities as any).slug}`}
             className="mb-3 inline-block text-xs font-semibold uppercase tracking-widest text-blue-500 hover:text-blue-600 dark:text-blue-400/80 dark:hover:text-blue-400"
           >
-            {article.cities.name}
+            {(article.cities as any).name}
           </Link>
         )}
         <h1 className="mb-3 text-4xl font-extrabold leading-tight tracking-[-0.03em] text-gray-900 dark:text-white">
@@ -135,24 +157,30 @@ export default async function ArticlePage({
             {article.subtitle}
           </p>
         )}
-        <div className="flex items-center gap-3 text-sm text-gray-400 dark:text-white/30">
-          {article.profiles?.username && (
+        <div className="flex flex-wrap items-center gap-3 text-sm text-gray-400 dark:text-white/30">
+          {(article.profiles as any)?.username && (
             <div className="flex items-center gap-2">
               <Avatar
-                username={article.profiles.username}
-                avatarUrl={article.profiles.avatar_url}
+                username={(article.profiles as any).username}
+                avatarUrl={(article.profiles as any).avatar_url}
                 size={24}
               />
               <Link
-                href={`/profile/${article.profiles.username}`}
+                href={`/profile/${(article.profiles as any).username}`}
                 className="font-medium text-gray-600 hover:text-gray-900 dark:text-white/50 dark:hover:text-white/80"
               >
-                @{article.profiles.username}
+                @{(article.profiles as any).username}
               </Link>
             </div>
           )}
           <span>·</span>
           <span>{publishDate}</span>
+          {readTime && (
+            <>
+              <span>·</span>
+              <span>{readTime}</span>
+            </>
+          )}
         </div>
       </div>
 
@@ -189,6 +217,50 @@ export default async function ArticlePage({
         />
       )}
 
+      {/* Related articles */}
+      {related && related.length > 0 && (
+        <div className="mt-14 border-t border-gray-100 pt-10 dark:border-white/[0.06]">
+          <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-white/30">
+            More from {(article.cities as any)?.name ?? "CityDiscuss"}
+          </p>
+          <div className="grid gap-3 sm:grid-cols-3">
+            {related.map((r: any) => (
+              <Link
+                key={r.slug}
+                href={`/articles/${r.slug}`}
+                className="group overflow-hidden rounded-xl border border-gray-200 bg-gray-50 transition-all hover:border-gray-300 hover:bg-gray-100 dark:border-white/[0.07] dark:bg-white/[0.02] dark:hover:border-white/[0.12] dark:hover:bg-white/[0.04]"
+              >
+                {r.cover_url ? (
+                  <div className="aspect-video w-full overflow-hidden">
+                    <img
+                      src={r.cover_url}
+                      alt={r.title}
+                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.04]"
+                      style={{ objectPosition: r.cover_position ?? "center" }}
+                    />
+                  </div>
+                ) : (
+                  <div className="flex aspect-video w-full items-center justify-center bg-gradient-to-br from-blue-500/10 to-blue-600/5 dark:from-blue-500/[0.08] dark:to-blue-600/[0.03]">
+                    <span className="text-2xl opacity-25">📰</span>
+                  </div>
+                )}
+                <div className="px-3 py-3">
+                  <p className="line-clamp-2 text-sm font-semibold leading-snug text-gray-900 dark:text-white">
+                    {r.title}
+                  </p>
+                  <p className="mt-1 text-xs text-gray-400 dark:text-white/25">
+                    {new Date(r.published_at).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Comments */}
       <div className="mt-14 border-t border-gray-100 pt-10 dark:border-white/[0.06]">
         <h2 className="mb-6 text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-white/35">
@@ -196,7 +268,6 @@ export default async function ArticlePage({
           {(comments?.length ?? 0) === 1 ? "comment" : "comments"}
         </h2>
 
-        {/* Comment list */}
         {comments && comments.length > 0 && (
           <div className="mb-2 flex flex-col gap-0.5">
             {comments.map((c: any) => {
@@ -238,7 +309,6 @@ export default async function ArticlePage({
           </div>
         )}
 
-        {/* Comment form */}
         <ArticleCommentForm articleId={article.id} />
       </div>
     </div>
