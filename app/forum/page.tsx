@@ -327,12 +327,8 @@ export default async function ForumPage(props: {
             {cities.map((city) => (
               <Link
                 key={city.slug}
-                href={`/forum?sort=${sort}&city=${city.slug}`}
-                className={`rounded-lg border px-3 py-1.5 text-sm transition-colors ${
-                  cityFilter === city.slug
-                    ? "border-blue-300 bg-blue-50 font-medium text-blue-700 dark:border-blue-500/40 dark:bg-blue-500/10 dark:text-blue-400"
-                    : "border-gray-200 bg-gray-50 text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:border-white/[0.07] dark:bg-white/[0.02] dark:text-white/45 dark:hover:border-white/15 dark:hover:text-white/70"
-                }`}
+                href={`/city/${city.slug}`}
+                className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 text-sm text-gray-500 transition-colors hover:border-gray-300 hover:text-gray-700 dark:border-white/[0.07] dark:bg-white/[0.02] dark:text-white/45 dark:hover:border-white/15 dark:hover:text-white/70"
               >
                 {city.name}
               </Link>

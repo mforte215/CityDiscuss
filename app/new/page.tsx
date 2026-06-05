@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { RichTextEditor } from "@/components/rich-text-editor";
 
@@ -20,8 +20,9 @@ function isYouTube(url: string) {
 
 export default function NewPostPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [cities, setCities] = useState<City[]>([]);
-  const [citySlug, setCitySlug] = useState("");
+  const [citySlug, setCitySlug] = useState(searchParams.get("city") ?? "");
   const [postType, setPostType] = useState<PostType>("text");
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");

@@ -15,11 +15,11 @@ export function CityDropdown({
 
   function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const city = e.target.value;
-    const params = new URLSearchParams();
-    if (sort !== "hot") params.set("sort", sort);
-    if (city) params.set("city", city);
-    const qs = params.toString();
-    router.push(`/forum${qs ? `?${qs}` : ""}`);
+    if (city) {
+      router.push(`/city/${city}`);
+    } else {
+      router.push(`/forum${sort !== "hot" ? `?sort=${sort}` : ""}`);
+    }
   }
 
   return (
