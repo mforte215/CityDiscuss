@@ -34,7 +34,6 @@ export default function EditPostPage(props: {
       }
 
       if (post.post_type !== "text") {
-        // Only text posts are editable for now
         router.push(`/city/${slug}/${postId}`);
         return;
       }
@@ -68,7 +67,7 @@ export default function EditPostPage(props: {
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-2xl px-6 py-20 text-sm text-white/30">
+      <div className="mx-auto max-w-2xl px-6 py-20 text-sm text-gray-400 dark:text-white/30">
         Loading...
       </div>
     );
@@ -78,43 +77,45 @@ export default function EditPostPage(props: {
     <div className="mx-auto max-w-2xl px-6 py-8">
       <button
         onClick={() => router.back()}
-        className="mb-6 text-sm text-white/35 hover:text-white/55"
+        className="mb-6 text-sm text-gray-400 hover:text-gray-600 dark:text-white/35 dark:hover:text-white/55"
       >
         ← Back
       </button>
 
-      <h2 className="mb-6 text-2xl font-bold tracking-tight">Edit post</h2>
+      <h2 className="mb-6 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+        Edit post
+      </h2>
 
       <div className="flex flex-col gap-4">
         <div>
-          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-white/35">
+          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-white/35">
             Title
           </label>
           <input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 text-[15px] text-white outline-none placeholder:text-white/20 focus:border-blue-500/30"
+            className="w-full rounded-xl border border-gray-200 bg-gray-100 px-4 py-3 text-[15px] text-gray-900 outline-none focus:border-blue-500/50 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-white dark:focus:border-blue-500/30"
           />
         </div>
 
         <div>
-          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-white/35">
+          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-white/35">
             Details
           </label>
           <textarea
             value={body}
             onChange={(e) => setBody(e.target.value)}
             rows={6}
-            className="w-full resize-y rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 text-sm leading-relaxed text-white outline-none placeholder:text-white/20 focus:border-blue-500/30"
+            className="w-full resize-y rounded-xl border border-gray-200 bg-gray-100 px-4 py-3 text-sm leading-relaxed text-gray-900 outline-none focus:border-blue-500/50 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-white dark:focus:border-blue-500/30"
           />
         </div>
 
-        {error && <p className="text-sm text-red-400">{error}</p>}
+        {error && <p className="text-sm text-red-500 dark:text-red-400">{error}</p>}
 
         <button
           onClick={handleSave}
           disabled={!title.trim() || saving}
-          className="w-full rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 py-3 text-sm font-semibold text-white disabled:from-white/[0.06] disabled:to-white/[0.06] disabled:text-white/25"
+          className="w-full rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 py-3 text-sm font-semibold text-white disabled:from-gray-200 disabled:to-gray-200 disabled:text-gray-400 dark:disabled:from-white/[0.06] dark:disabled:to-white/[0.06] dark:disabled:text-white/25"
         >
           {saving ? "Saving..." : "Save changes"}
         </button>

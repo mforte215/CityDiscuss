@@ -44,7 +44,7 @@ export function NavAuth() {
       <div className="flex items-center gap-3">
         <Link
           href="/account"
-          className="text-sm text-white/50 hover:text-white/80"
+          className="text-sm text-gray-500 hover:text-gray-800 dark:text-white/50 dark:hover:text-white/80"
         >
           {user.user_metadata?.username ||
             user.user_metadata?.full_name ||
@@ -52,7 +52,7 @@ export function NavAuth() {
         </Link>
         <button
           onClick={handleLogout}
-          className="rounded-lg border border-white/10 px-4 py-1.5 text-sm text-white/70 hover:bg-white/5"
+          className="rounded-lg border border-gray-200 px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-100 dark:border-white/10 dark:text-white/70 dark:hover:bg-white/5"
         >
           Log out
         </button>
@@ -64,7 +64,7 @@ export function NavAuth() {
     <div className="flex gap-2">
       <Link
         href="/auth/login"
-        className="rounded-lg border border-white/10 px-4 py-1.5 text-sm text-white/70 hover:bg-white/5"
+        className="rounded-lg border border-gray-200 px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-100 dark:border-white/10 dark:text-white/70 dark:hover:bg-white/5"
       >
         Log in
       </Link>

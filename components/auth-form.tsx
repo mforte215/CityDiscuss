@@ -69,7 +69,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
       {/* Google button */}
       <button
         onClick={handleGoogle}
-        className="flex w-full items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm font-medium text-white transition-all hover:border-white/20 hover:bg-white/[0.08]"
+        className="flex w-full items-center justify-center gap-3 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-medium text-gray-700 transition-all hover:border-gray-300 hover:bg-gray-100 dark:border-white/10 dark:bg-white/[0.04] dark:text-white dark:hover:border-white/20 dark:hover:bg-white/[0.08]"
       >
         <svg width="18" height="18" viewBox="0 0 24 24">
           <path
@@ -94,28 +94,28 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
 
       {/* Divider */}
       <div className="flex items-center gap-3">
-        <div className="h-px flex-1 bg-white/[0.08]" />
-        <span className="text-xs text-white/25">or</span>
-        <div className="h-px flex-1 bg-white/[0.08]" />
+        <div className="h-px flex-1 bg-gray-200 dark:bg-white/[0.08]" />
+        <span className="text-xs text-gray-400 dark:text-white/25">or</span>
+        <div className="h-px flex-1 bg-gray-200 dark:bg-white/[0.08]" />
       </div>
 
       {/* Email form */}
       {isSignup && (
         <div>
-          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-white/35">
+          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-white/35">
             Username
           </label>
           <input
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             placeholder="Choose a username"
-            className="w-full rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 text-sm text-white outline-none placeholder:text-white/20 focus:border-blue-500/30"
+            className="w-full rounded-xl border border-gray-200 bg-gray-100 px-4 py-3 text-sm text-gray-900 outline-none placeholder:text-gray-400 focus:border-blue-500/50 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-white dark:placeholder:text-white/20 dark:focus:border-blue-500/30"
           />
         </div>
       )}
 
       <div>
-        <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-white/35">
+        <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-white/35">
           Email
         </label>
         <input
@@ -123,12 +123,12 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@example.com"
-          className="w-full rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 text-sm text-white outline-none placeholder:text-white/20 focus:border-blue-500/30"
+          className="w-full rounded-xl border border-gray-200 bg-gray-100 px-4 py-3 text-sm text-gray-900 outline-none placeholder:text-gray-400 focus:border-blue-500/50 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-white dark:placeholder:text-white/20 dark:focus:border-blue-500/30"
         />
       </div>
 
       <div>
-        <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-white/35">
+        <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-white/35">
           Password
         </label>
         <input
@@ -136,16 +136,16 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder={isSignup ? "At least 6 characters" : "Your password"}
-          className="w-full rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 text-sm text-white outline-none placeholder:text-white/20 focus:border-blue-500/30"
+          className="w-full rounded-xl border border-gray-200 bg-gray-100 px-4 py-3 text-sm text-gray-900 outline-none placeholder:text-gray-400 focus:border-blue-500/50 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-white dark:placeholder:text-white/20 dark:focus:border-blue-500/30"
         />
       </div>
 
-      {error && <p className="text-sm text-red-400">{error}</p>}
+      {error && <p className="text-sm text-red-500 dark:text-red-400">{error}</p>}
 
       <button
         onClick={handleSubmit}
         disabled={!filled || loading}
-        className="w-full rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 py-3 text-sm font-semibold text-white shadow-[0_0_24px_rgba(59,130,246,0.2)] disabled:from-white/[0.06] disabled:to-white/[0.06] disabled:text-white/25 disabled:shadow-none"
+        className="w-full rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 py-3 text-sm font-semibold text-white shadow-[0_0_24px_rgba(59,130,246,0.2)] disabled:from-gray-200 disabled:to-gray-200 disabled:text-gray-400 disabled:shadow-none dark:disabled:from-white/[0.06] dark:disabled:to-white/[0.06] dark:disabled:text-white/25"
       >
         {loading ? "Loading..." : isSignup ? "Create account" : "Log in"}
       </button>

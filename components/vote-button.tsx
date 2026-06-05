@@ -69,8 +69,8 @@ export function VoteButton({
         aria-label="Upvote"
         className={`flex h-7 w-7 items-center justify-center rounded-lg transition-colors ${
           userVote === 1
-            ? "text-orange-400"
-            : "text-white/20 hover:text-orange-400/70"
+            ? "text-orange-500 dark:text-orange-400"
+            : "text-gray-300 hover:text-orange-400/70 dark:text-white/20 dark:hover:text-orange-400/70"
         }`}
       >
         <svg
@@ -89,10 +89,10 @@ export function VoteButton({
       <span
         className={`min-w-[1.5rem] text-center text-xs font-bold tabular-nums ${
           userVote === 1
-            ? "text-orange-400"
+            ? "text-orange-500 dark:text-orange-400"
             : userVote === -1
-              ? "text-blue-400"
-              : "text-white/40"
+              ? "text-blue-500 dark:text-blue-400"
+              : "text-gray-400 dark:text-white/40"
         }`}
       >
         {score}
@@ -104,8 +104,8 @@ export function VoteButton({
         aria-label="Downvote"
         className={`flex h-7 w-7 items-center justify-center rounded-lg transition-colors ${
           userVote === -1
-            ? "text-blue-400"
-            : "text-white/20 hover:text-blue-400/70"
+            ? "text-blue-500 dark:text-blue-400"
+            : "text-gray-300 hover:text-blue-400/70 dark:text-white/20 dark:hover:text-blue-400/70"
         }`}
       >
         <svg

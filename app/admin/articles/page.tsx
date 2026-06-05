@@ -14,7 +14,7 @@ export default function AdminArticlesPage() {
           + New article
         </Link>
       </div>
-      <p className="text-sm text-white/30">Article list coming soon.</p>
+      <p className="text-sm text-gray-400 dark:text-white/30">Article list coming soon.</p>
     </div>
   );
 }

@@ -51,10 +51,10 @@ export default async function Home() {
             className="rounded-xl"
           />
           <div>
-            <h1 className="text-2xl font-extrabold tracking-tight">
+            <h1 className="text-2xl font-extrabold tracking-tight text-gray-900 dark:text-white">
               CityDiscuss
             </h1>
-            <p className="text-sm text-white/35">
+            <p className="text-sm text-gray-400 dark:text-white/35">
               Latest posts from every city
             </p>
           </div>
@@ -71,16 +71,16 @@ export default async function Home() {
           return (
             <div
               key={post.id}
-              className="group relative rounded-2xl border border-white/5 bg-white/[0.02] px-5 py-4 transition-all hover:border-white/10 hover:bg-white/[0.04]"
+              className="group relative rounded-2xl border border-gray-100 bg-gray-50 px-5 py-4 transition-all hover:border-gray-200 hover:bg-gray-100 dark:border-white/5 dark:bg-white/[0.02] dark:hover:border-white/10 dark:hover:bg-white/[0.04]"
             >
               <Link
                 href={`/city/${city?.slug}/${post.id}`}
                 className="absolute inset-0 rounded-2xl"
                 aria-label={post.title}
               />
-              <div className="relative flex gap-3 pointer-events-none">
+              <div className="pointer-events-none relative flex gap-3">
                 {post.post_type === "photo" && post.media_url ? (
-                  <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-white/[0.07]">
+                  <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-gray-200 dark:border-white/[0.07]">
                     <img
                       src={post.media_url}
                       alt={post.title}
@@ -93,31 +93,31 @@ export default async function Home() {
 
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-                    <h3 className="text-[15px] font-semibold leading-snug tracking-[-0.01em]">
+                    <h3 className="text-[15px] font-semibold leading-snug tracking-[-0.01em] text-gray-900 dark:text-white">
                       {post.title}
                     </h3>
                     {post.post_type !== "text" && (
-                      <span className="rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white/30 ring-1 ring-white/10">
+                      <span className="rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-gray-400 ring-1 ring-gray-200 dark:text-white/30 dark:ring-white/10">
                         {post.post_type}
                       </span>
                     )}
                   </div>
 
                   {post.body && (
-                    <p className="mt-1 line-clamp-1 text-sm text-white/35">
+                    <p className="mt-1 line-clamp-1 text-sm text-gray-400 dark:text-white/35">
                       {post.body}
                     </p>
                   )}
 
-                  <div className="mt-2 flex flex-wrap gap-3 text-xs text-white/25">
+                  <div className="mt-2 flex flex-wrap gap-3 text-xs text-gray-400 dark:text-white/25">
                     {city && (
-                      <span className="font-medium text-blue-400/70">
+                      <span className="font-medium text-blue-500 dark:text-blue-400/70">
                         {city.name}
                       </span>
                     )}
                     <Link
                       href={`/profile/${username}`}
-                      className="relative pointer-events-auto text-white/40 hover:text-blue-400"
+                      className="pointer-events-auto relative text-gray-500 hover:text-blue-500 dark:text-white/40 dark:hover:text-blue-400"
                     >
                       @{username}
                     </Link>
@@ -131,14 +131,14 @@ export default async function Home() {
         })}
 
         {(!posts || posts.length === 0) && (
-          <div className="py-20 text-center text-sm text-white/25">
+          <div className="py-20 text-center text-sm text-gray-400 dark:text-white/25">
             No posts yet. Be the first to start a discussion!
           </div>
         )}
       </div>
 
-      <div className="mt-8 border-t border-white/[0.05] pt-6">
-        <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-white/25">
+      <div className="mt-8 border-t border-gray-100 pt-6 dark:border-white/[0.05]">
+        <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-white/25">
           Browse by city
         </p>
         <div className="flex flex-wrap gap-2">
@@ -146,7 +146,7 @@ export default async function Home() {
             <Link
               key={city.slug}
               href={`/city/${city.slug}`}
-              className="rounded-lg border border-white/[0.07] bg-white/[0.02] px-3 py-1.5 text-sm text-white/45 transition-colors hover:border-white/15 hover:text-white/70"
+              className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 text-sm text-gray-500 transition-colors hover:border-gray-300 hover:text-gray-700 dark:border-white/[0.07] dark:bg-white/[0.02] dark:text-white/45 dark:hover:border-white/15 dark:hover:text-white/70"
             >
               {city.name}
             </Link>

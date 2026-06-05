@@ -29,7 +29,7 @@ export default async function ArticlePage({
       {/* Back */}
       <Link
         href="/"
-        className="mb-8 inline-block text-sm text-white/30 hover:text-white/55"
+        className="mb-8 inline-block text-sm text-gray-400 hover:text-gray-600 dark:text-white/30 dark:hover:text-white/55"
       >
         ← Back
       </Link>
@@ -39,24 +39,24 @@ export default async function ArticlePage({
         {article.cities && (
           <Link
             href={`/city/${article.cities.slug}`}
-            className="mb-3 inline-block text-xs font-semibold uppercase tracking-widest text-blue-400/80 hover:text-blue-400"
+            className="mb-3 inline-block text-xs font-semibold uppercase tracking-widest text-blue-500 hover:text-blue-600 dark:text-blue-400/80 dark:hover:text-blue-400"
           >
             {article.cities.name}
           </Link>
         )}
-        <h1 className="mb-3 text-4xl font-extrabold leading-tight tracking-[-0.03em]">
+        <h1 className="mb-3 text-4xl font-extrabold leading-tight tracking-[-0.03em] text-gray-900 dark:text-white">
           {article.title}
         </h1>
         {article.subtitle && (
-          <p className="mb-4 text-xl leading-relaxed text-white/50">
+          <p className="mb-4 text-xl leading-relaxed text-gray-500 dark:text-white/50">
             {article.subtitle}
           </p>
         )}
-        <div className="flex items-center gap-3 text-sm text-white/30">
+        <div className="flex items-center gap-3 text-sm text-gray-400 dark:text-white/30">
           {article.profiles?.username && (
             <Link
               href={`/profile/${article.profiles.username}`}
-              className="font-medium text-white/50 hover:text-white/80"
+              className="font-medium text-gray-600 hover:text-gray-900 dark:text-white/50 dark:hover:text-white/80"
             >
               @{article.profiles.username}
             </Link>
@@ -68,7 +68,7 @@ export default async function ArticlePage({
 
       {/* Cover image */}
       {article.cover_url && (
-        <div className="mb-10 overflow-hidden rounded-2xl border border-white/[0.07]">
+        <div className="mb-10 overflow-hidden rounded-2xl border border-gray-200 dark:border-white/[0.07]">
           <img
             src={article.cover_url}
             alt={article.title}
@@ -80,16 +80,20 @@ export default async function ArticlePage({
       {/* Body */}
       {article.body && (
         <div
-          className="prose prose-invert prose-lg max-w-none
+          className="prose prose-lg max-w-none
+            dark:prose-invert
             prose-headings:font-extrabold prose-headings:tracking-tight
             prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4
             prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3
-            prose-p:text-white/70 prose-p:leading-relaxed prose-p:mb-5
-            prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline
-            prose-strong:text-white
-            prose-blockquote:border-blue-500 prose-blockquote:text-white/50
-            prose-img:rounded-xl prose-img:border prose-img:border-white/[0.07]
-            prose-hr:border-white/10"
+            prose-p:leading-relaxed prose-p:mb-5
+            prose-a:text-blue-500 prose-a:no-underline hover:prose-a:underline
+            dark:prose-p:text-white/70
+            dark:prose-strong:text-white
+            prose-blockquote:border-blue-500
+            dark:prose-blockquote:text-white/50
+            prose-img:rounded-xl prose-img:border prose-img:border-gray-200
+            dark:prose-img:border-white/[0.07]
+            prose-hr:border-gray-200 dark:prose-hr:border-white/10"
           dangerouslySetInnerHTML={{ __html: article.body }}
         />
       )}

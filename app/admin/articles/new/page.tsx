@@ -96,7 +96,7 @@ export default function NewArticlePage() {
 
   if (checking) {
     return (
-      <div className="mx-auto max-w-3xl px-6 py-20 text-sm text-white/30">
+      <div className="mx-auto max-w-3xl px-6 py-20 text-sm text-gray-400 dark:text-white/30">
         Checking access...
       </div>
     );
@@ -105,19 +105,21 @@ export default function NewArticlePage() {
   return (
     <div className="mx-auto max-w-3xl px-6 py-10">
       <div className="mb-8 flex items-center justify-between">
-        <h1 className="text-2xl font-bold tracking-tight">New article</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+          New article
+        </h1>
         <div className="flex gap-2">
           <button
             onClick={() => handleSave(false)}
             disabled={saving}
-            className="rounded-xl border border-white/10 px-4 py-2 text-sm text-white/50 hover:bg-white/5 disabled:opacity-40"
+            className="rounded-xl border border-gray-200 px-4 py-2 text-sm text-gray-500 hover:bg-gray-100 disabled:opacity-40 dark:border-white/10 dark:text-white/50 dark:hover:bg-white/5"
           >
             Save draft
           </button>
           <button
             onClick={() => handleSave(true)}
             disabled={saving}
-            className="rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 px-4 py-2 text-sm font-semibold disabled:opacity-40"
+            className="rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-40"
           >
             Publish
           </button>
@@ -127,34 +129,34 @@ export default function NewArticlePage() {
       <div className="flex flex-col gap-5">
         {/* Title */}
         <div>
-          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-white/35">
+          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-white/35">
             Title
           </label>
           <input
             value={title}
             onChange={(e) => handleTitleChange(e.target.value)}
             placeholder="Article title"
-            className="w-full rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 text-xl font-bold text-white outline-none placeholder:text-white/20 focus:border-blue-500/30"
+            className="w-full rounded-xl border border-gray-200 bg-gray-100 px-4 py-3 text-xl font-bold text-gray-900 outline-none placeholder:text-gray-400 focus:border-blue-500/50 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-white dark:placeholder:text-white/20 dark:focus:border-blue-500/30"
           />
         </div>
 
         {/* Subtitle */}
         <div>
-          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-white/35">
+          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-white/35">
             Subtitle{" "}
-            <span className="normal-case text-white/20">(optional)</span>
+            <span className="normal-case text-gray-300 dark:text-white/20">(optional)</span>
           </label>
           <input
             value={subtitle}
             onChange={(e) => setSubtitle(e.target.value)}
             placeholder="A short description or teaser"
-            className="w-full rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 text-[15px] text-white outline-none placeholder:text-white/20 focus:border-blue-500/30"
+            className="w-full rounded-xl border border-gray-200 bg-gray-100 px-4 py-3 text-[15px] text-gray-900 outline-none placeholder:text-gray-400 focus:border-blue-500/50 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-white dark:placeholder:text-white/20 dark:focus:border-blue-500/30"
           />
         </div>
 
         {/* Slug */}
         <div>
-          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-white/35">
+          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-white/35">
             Slug
           </label>
           <input
@@ -164,22 +166,23 @@ export default function NewArticlePage() {
               setSlugManual(true);
             }}
             placeholder="article-url-slug"
-            className="w-full rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 text-sm font-mono text-white/70 outline-none placeholder:text-white/20 focus:border-blue-500/30"
+            className="w-full rounded-xl border border-gray-200 bg-gray-100 px-4 py-3 font-mono text-sm text-gray-600 outline-none placeholder:text-gray-400 focus:border-blue-500/50 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-white/70 dark:placeholder:text-white/20 dark:focus:border-blue-500/30"
           />
-          <p className="mt-1 text-xs text-white/25">
+          <p className="mt-1 text-xs text-gray-400 dark:text-white/25">
             Will be live at /articles/{slug || "your-slug"}
           </p>
         </div>
 
         {/* City */}
         <div>
-          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-white/35">
-            City <span className="normal-case text-white/20">(optional)</span>
+          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-white/35">
+            City{" "}
+            <span className="normal-case text-gray-300 dark:text-white/20">(optional)</span>
           </label>
           <select
             value={cityId}
             onChange={(e) => setCityId(e.target.value)}
-            className="w-full rounded-xl border border-white/[0.08] bg-[#0f0f0f] px-4 py-3 text-sm text-white outline-none focus:border-blue-500/30"
+            className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 outline-none focus:border-blue-500/50 dark:border-white/[0.08] dark:bg-[#0f0f0f] dark:text-white dark:focus:border-blue-500/30"
           >
             <option value="">No city</option>
             {cities.map((c) => (
@@ -192,18 +195,18 @@ export default function NewArticlePage() {
 
         {/* Cover image URL */}
         <div>
-          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-white/35">
+          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-white/35">
             Cover image URL{" "}
-            <span className="normal-case text-white/20">(optional)</span>
+            <span className="normal-case text-gray-300 dark:text-white/20">(optional)</span>
           </label>
           <input
             value={coverUrl}
             onChange={(e) => setCoverUrl(e.target.value)}
             placeholder="https://..."
-            className="w-full rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 text-sm text-white outline-none placeholder:text-white/20 focus:border-blue-500/30"
+            className="w-full rounded-xl border border-gray-200 bg-gray-100 px-4 py-3 text-sm text-gray-900 outline-none placeholder:text-gray-400 focus:border-blue-500/50 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-white dark:placeholder:text-white/20 dark:focus:border-blue-500/30"
           />
           {coverUrl && (
-            <div className="mt-2 overflow-hidden rounded-xl border border-white/[0.07]">
+            <div className="mt-2 overflow-hidden rounded-xl border border-gray-200 dark:border-white/[0.07]">
               <img
                 src={coverUrl}
                 alt="Cover preview"
@@ -215,22 +218,23 @@ export default function NewArticlePage() {
 
         {/* Body */}
         <div>
-          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-white/35">
-            Body <span className="normal-case text-white/20">(HTML)</span>
+          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-white/35">
+            Body{" "}
+            <span className="normal-case text-gray-300 dark:text-white/20">(HTML)</span>
           </label>
           <textarea
             value={body}
             onChange={(e) => setBody(e.target.value)}
             placeholder="<p>Write your article here...</p>"
             rows={20}
-            className="w-full resize-y rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 font-mono text-sm leading-relaxed text-white/70 outline-none placeholder:text-white/20 focus:border-blue-500/30"
+            className="w-full resize-y rounded-xl border border-gray-200 bg-gray-100 px-4 py-3 font-mono text-sm leading-relaxed text-gray-700 outline-none placeholder:text-gray-400 focus:border-blue-500/50 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-white/70 dark:placeholder:text-white/20 dark:focus:border-blue-500/30"
           />
-          <p className="mt-1 text-xs text-white/25">
+          <p className="mt-1 text-xs text-gray-400 dark:text-white/25">
             Paste HTML or write it directly. Tiptap editor coming next.
           </p>
         </div>
 
-        {error && <p className="text-sm text-red-400">{error}</p>}
+        {error && <p className="text-sm text-red-500 dark:text-red-400">{error}</p>}
       </div>
     </div>
   );

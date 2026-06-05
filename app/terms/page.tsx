@@ -1,25 +1,27 @@
 export default function TermsPage() {
   return (
     <div className="mx-auto max-w-2xl px-6 py-16">
-      <h1 className="mb-2 text-3xl font-bold tracking-tight">
+      <h1 className="mb-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
         Terms of Service
       </h1>
-      <p className="mb-10 text-sm text-white/30">Last updated: June 2, 2026</p>
+      <p className="mb-10 text-sm text-gray-400 dark:text-white/30">
+        Last updated: June 2, 2026
+      </p>
 
-      <div className="flex flex-col gap-8 text-sm leading-relaxed text-white/60">
+      <div className="flex flex-col gap-8 text-sm leading-relaxed text-gray-600 dark:text-white/60">
         <section>
-          <h2 className="mb-3 text-base font-semibold text-white">
+          <h2 className="mb-3 text-base font-semibold text-gray-900 dark:text-white">
             1. Acceptance of Terms
           </h2>
           <p>
-            By accessing or using CityDiscuss ("the Service"), you agree to be
+            By accessing or using CityDiscuss (&quot;the Service&quot;), you agree to be
             bound by these Terms of Service. If you do not agree to these terms,
             please do not use the Service.
           </p>
         </section>
 
         <section>
-          <h2 className="mb-3 text-base font-semibold text-white">
+          <h2 className="mb-3 text-base font-semibold text-gray-900 dark:text-white">
             2. Use of the Service
           </h2>
           <p>
@@ -31,7 +33,7 @@ export default function TermsPage() {
         </section>
 
         <section>
-          <h2 className="mb-3 text-base font-semibold text-white">
+          <h2 className="mb-3 text-base font-semibold text-gray-900 dark:text-white">
             3. User Accounts
           </h2>
           <p>
@@ -43,7 +45,7 @@ export default function TermsPage() {
         </section>
 
         <section>
-          <h2 className="mb-3 text-base font-semibold text-white">
+          <h2 className="mb-3 text-base font-semibold text-gray-900 dark:text-white">
             4. User Content
           </h2>
           <p>
@@ -55,19 +57,19 @@ export default function TermsPage() {
           </p>
           <ul className="mt-2 list-disc pl-5 space-y-1">
             <li>Illegal, harmful, threatening, or harassing</li>
-            <li>Defamatory, obscene, or invasive of another's privacy</li>
+            <li>Defamatory, obscene, or invasive of another&apos;s privacy</li>
             <li>
               Spam, advertising, or commercial solicitation without permission
             </li>
             <li>Impersonating another person or entity</li>
             <li>
-              In violation of any third party's intellectual property rights
+              In violation of any third party&apos;s intellectual property rights
             </li>
           </ul>
         </section>
 
         <section>
-          <h2 className="mb-3 text-base font-semibold text-white">
+          <h2 className="mb-3 text-base font-semibold text-gray-900 dark:text-white">
             5. Content Moderation
           </h2>
           <p>
@@ -79,7 +81,7 @@ export default function TermsPage() {
         </section>
 
         <section>
-          <h2 className="mb-3 text-base font-semibold text-white">
+          <h2 className="mb-3 text-base font-semibold text-gray-900 dark:text-white">
             6. Intellectual Property
           </h2>
           <p>
@@ -90,11 +92,11 @@ export default function TermsPage() {
         </section>
 
         <section>
-          <h2 className="mb-3 text-base font-semibold text-white">
+          <h2 className="mb-3 text-base font-semibold text-gray-900 dark:text-white">
             7. Disclaimers
           </h2>
           <p>
-            The Service is provided "as is" without warranties of any kind.
+            The Service is provided &quot;as is&quot; without warranties of any kind.
             CityDiscuss does not guarantee the accuracy, completeness, or
             usefulness of any content posted by users. We are not responsible
             for any harm resulting from your use of the Service or reliance on
@@ -103,7 +105,7 @@ export default function TermsPage() {
         </section>
 
         <section>
-          <h2 className="mb-3 text-base font-semibold text-white">
+          <h2 className="mb-3 text-base font-semibold text-gray-900 dark:text-white">
             8. Limitation of Liability
           </h2>
           <p>
@@ -115,7 +117,7 @@ export default function TermsPage() {
         </section>
 
         <section>
-          <h2 className="mb-3 text-base font-semibold text-white">
+          <h2 className="mb-3 text-base font-semibold text-gray-900 dark:text-white">
             9. Changes to Terms
           </h2>
           <p>
@@ -127,7 +129,7 @@ export default function TermsPage() {
         </section>
 
         <section>
-          <h2 className="mb-3 text-base font-semibold text-white">
+          <h2 className="mb-3 text-base font-semibold text-gray-900 dark:text-white">
             10. Governing Law
           </h2>
           <p>
@@ -137,14 +139,14 @@ export default function TermsPage() {
         </section>
 
         <section>
-          <h2 className="mb-3 text-base font-semibold text-white">
+          <h2 className="mb-3 text-base font-semibold text-gray-900 dark:text-white">
             11. Contact
           </h2>
           <p>
             For questions about these Terms of Service, contact us at{" "}
             <a
               href="mailto:markcforte@gmail.com"
-              className="text-blue-400 hover:underline"
+              className="text-blue-500 hover:underline dark:text-blue-400"
             >
               markcforte@gmail.com
             </a>

@@ -1,12 +1,16 @@
 export default function PrivacyPage() {
   return (
     <div className="mx-auto max-w-2xl px-6 py-16">
-      <h1 className="mb-2 text-3xl font-bold tracking-tight">Privacy Policy</h1>
-      <p className="mb-10 text-sm text-white/30">Last updated: June 2, 2026</p>
+      <h1 className="mb-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+        Privacy Policy
+      </h1>
+      <p className="mb-10 text-sm text-gray-400 dark:text-white/30">
+        Last updated: June 2, 2026
+      </p>
 
-      <div className="flex flex-col gap-8 text-sm leading-relaxed text-white/60">
+      <div className="flex flex-col gap-8 text-sm leading-relaxed text-gray-600 dark:text-white/60">
         <section>
-          <h2 className="mb-3 text-base font-semibold text-white">
+          <h2 className="mb-3 text-base font-semibold text-gray-900 dark:text-white">
             1. Information We Collect
           </h2>
           <p>
@@ -18,7 +22,7 @@ export default function PrivacyPage() {
         </section>
 
         <section>
-          <h2 className="mb-3 text-base font-semibold text-white">
+          <h2 className="mb-3 text-base font-semibold text-gray-900 dark:text-white">
             2. How We Use Your Information
           </h2>
           <p>
@@ -30,7 +34,7 @@ export default function PrivacyPage() {
         </section>
 
         <section>
-          <h2 className="mb-3 text-base font-semibold text-white">
+          <h2 className="mb-3 text-base font-semibold text-gray-900 dark:text-white">
             3. Data Storage
           </h2>
           <p>
@@ -41,13 +45,13 @@ export default function PrivacyPage() {
         </section>
 
         <section>
-          <h2 className="mb-3 text-base font-semibold text-white">
+          <h2 className="mb-3 text-base font-semibold text-gray-900 dark:text-white">
             4. Third-Party Services
           </h2>
           <p>CityDiscuss uses the following third-party services:</p>
           <ul className="mt-2 list-disc pl-5 space-y-1">
             <li>
-              Google OAuth — for sign-in (governed by Google's Privacy Policy)
+              Google OAuth — for sign-in (governed by Google&apos;s Privacy Policy)
             </li>
             <li>Supabase — for database and authentication</li>
             <li>Vercel — for hosting</li>
@@ -55,7 +59,7 @@ export default function PrivacyPage() {
         </section>
 
         <section>
-          <h2 className="mb-3 text-base font-semibold text-white">
+          <h2 className="mb-3 text-base font-semibold text-gray-900 dark:text-white">
             5. Cookies
           </h2>
           <p>
@@ -65,7 +69,7 @@ export default function PrivacyPage() {
         </section>
 
         <section>
-          <h2 className="mb-3 text-base font-semibold text-white">
+          <h2 className="mb-3 text-base font-semibold text-gray-900 dark:text-white">
             6. Your Rights
           </h2>
           <p>
@@ -77,8 +81,8 @@ export default function PrivacyPage() {
         </section>
 
         <section>
-          <h2 className="mb-3 text-base font-semibold text-white">
-            7. Children's Privacy
+          <h2 className="mb-3 text-base font-semibold text-gray-900 dark:text-white">
+            7. Children&apos;s Privacy
           </h2>
           <p>
             CityDiscuss is not directed at children under the age of 13. We do
@@ -87,7 +91,7 @@ export default function PrivacyPage() {
         </section>
 
         <section>
-          <h2 className="mb-3 text-base font-semibold text-white">
+          <h2 className="mb-3 text-base font-semibold text-gray-900 dark:text-white">
             8. Changes to This Policy
           </h2>
           <p>
@@ -97,14 +101,14 @@ export default function PrivacyPage() {
         </section>
 
         <section>
-          <h2 className="mb-3 text-base font-semibold text-white">
+          <h2 className="mb-3 text-base font-semibold text-gray-900 dark:text-white">
             9. Contact
           </h2>
           <p>
             If you have questions about this privacy policy, contact us at{" "}
             <a
               href="mailto:markcforte@gmail.com"
-              className="text-blue-400 hover:underline"
+              className="text-blue-500 hover:underline dark:text-blue-400"
             >
               markcforte@gmail.com
             </a>

@@ -77,28 +77,36 @@ export default async function ProfilePage({
       <div className="mb-8 flex items-center gap-4">
         <Avatar username={profile.username} size={56} />
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight">
+          <h1 className="text-2xl font-extrabold tracking-tight text-gray-900 dark:text-white">
             {profile.username}
           </h1>
-          <p className="mt-0.5 text-sm text-white/30">Joined {joinDate}</p>
+          <p className="mt-0.5 text-sm text-gray-400 dark:text-white/30">
+            Joined {joinDate}
+          </p>
         </div>
       </div>
 
       {/* Stats row */}
-      <div className="mb-8 flex gap-6 rounded-xl border border-white/[0.06] bg-white/[0.02] px-5 py-4">
+      <div className="mb-8 flex gap-6 rounded-xl border border-gray-200 bg-gray-50 px-5 py-4 dark:border-white/[0.06] dark:bg-white/[0.02]">
         <div>
-          <div className="text-lg font-bold">{posts?.length ?? 0}</div>
-          <div className="text-xs text-white/30">Posts</div>
+          <div className="text-lg font-bold text-gray-900 dark:text-white">
+            {posts?.length ?? 0}
+          </div>
+          <div className="text-xs text-gray-400 dark:text-white/30">Posts</div>
         </div>
-        <div className="w-px bg-white/[0.06]" />
+        <div className="w-px bg-gray-200 dark:bg-white/[0.06]" />
         <div>
-          <div className="text-lg font-bold">{totalScore}</div>
-          <div className="text-xs text-white/30">Total votes</div>
+          <div className="text-lg font-bold text-gray-900 dark:text-white">
+            {totalScore}
+          </div>
+          <div className="text-xs text-gray-400 dark:text-white/30">
+            Total votes
+          </div>
         </div>
       </div>
 
       {/* Posts list */}
-      <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-white/30">
+      <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-white/30">
         Posts
       </h2>
 
@@ -117,18 +125,18 @@ export default async function ProfilePage({
               <Link
                 key={post.id}
                 href={`/city/${city?.slug}/${post.id}`}
-                className="group rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3.5 transition-all hover:border-blue-500/25 hover:bg-blue-500/[0.04]"
+                className="group rounded-xl border border-gray-200 bg-gray-50 px-4 py-3.5 transition-all hover:border-blue-300 hover:bg-blue-50 dark:border-white/[0.06] dark:bg-white/[0.02] dark:hover:border-blue-500/25 dark:hover:bg-blue-500/[0.04]"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold leading-snug">
+                    <p className="truncate text-sm font-semibold leading-snug text-gray-900 dark:text-white">
                       {post.title}
                     </p>
-                    <p className="mt-1 text-xs text-white/30">
+                    <p className="mt-1 text-xs text-gray-400 dark:text-white/30">
                       {city?.name} · {timeAgo(post.created_at)}
                     </p>
                   </div>
-                  <div className="flex shrink-0 items-center gap-3 text-xs text-white/25">
+                  <div className="flex shrink-0 items-center gap-3 text-xs text-gray-400 dark:text-white/25">
                     <span>{score} pts</span>
                     <span>{commentCount} comments</span>
                   </div>
@@ -138,7 +146,7 @@ export default async function ProfilePage({
           })}
         </div>
       ) : (
-        <p className="text-sm text-white/25">No posts yet.</p>
+        <p className="text-sm text-gray-400 dark:text-white/25">No posts yet.</p>
       )}
     </div>
   );

@@ -1,6 +1,24 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
+  --bg-primary: #f8f9fa;
+  --bg-secondary: #f1f3f5;
+  --bg-card: rgba(0, 0, 0, 0.02);
+  --bg-card-hover: rgba(0, 0, 0, 0.04);
+  --border: rgba(0, 0, 0, 0.08);
+  --border-hover: rgba(0, 0, 0, 0.14);
+  --text-primary: #0f0f0f;
+  --text-secondary: rgba(0, 0, 0, 0.6);
+  --text-muted: rgba(0, 0, 0, 0.38);
+  --accent: #3b82f6;
+  --accent-light: #60a5fa;
+  --accent-glow: rgba(59, 130, 246, 0.2);
+}
+
+.dark {
   --bg-primary: #0a0a0f;
   --bg-secondary: #111118;
   --bg-card: rgba(255, 255, 255, 0.03);

@@ -117,20 +117,20 @@ export default async function CityPage(props: {
         <div>
           <Link
             href="/"
-            className="mb-2 inline-block text-xs text-white/30 hover:text-white/50"
+            className="mb-2 inline-block text-xs text-gray-400 hover:text-gray-600 dark:text-white/30 dark:hover:text-white/50"
           >
             ← All cities
           </Link>
-          <h1 className="text-3xl font-extrabold tracking-tight">
+          <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">
             {city.name}
           </h1>
-          <p className="mt-1 text-sm text-white/30">
+          <p className="mt-1 text-sm text-gray-400 dark:text-white/30">
             {scored.length} discussions · {city.state}
           </p>
         </div>
         <Link
           href="/new"
-          className="flex items-center gap-1.5 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 px-5 py-2.5 text-sm font-semibold shadow-[0_0_24px_rgba(59,130,246,0.25)]"
+          className="flex items-center gap-1.5 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-[0_0_24px_rgba(59,130,246,0.25)]"
         >
           <span className="text-base font-normal">+</span> New post
         </Link>
@@ -144,8 +144,8 @@ export default async function CityPage(props: {
             href={`/city/${slug}?sort=${tab.value}`}
             className={`rounded-lg px-3.5 py-1.5 text-xs font-semibold transition-colors ${
               sort === tab.value
-                ? "bg-white/[0.08] text-white"
-                : "text-white/30 hover:text-white/55"
+                ? "bg-gray-100 text-gray-900 dark:bg-white/[0.08] dark:text-white"
+                : "text-gray-400 hover:text-gray-600 dark:text-white/30 dark:hover:text-white/55"
             }`}
           >
             {tab.label}
@@ -162,9 +162,9 @@ export default async function CityPage(props: {
           return (
             <div
               key={post.id}
-              className="group flex gap-1 rounded-2xl border border-white/5 bg-white/[0.02] px-3 py-3 transition-all hover:border-white/10 hover:bg-white/[0.04]"
+              className="group flex gap-1 rounded-2xl border border-gray-100 bg-gray-50 px-3 py-3 transition-all hover:border-gray-200 hover:bg-gray-100 dark:border-white/5 dark:bg-white/[0.02] dark:hover:border-white/10 dark:hover:bg-white/[0.04]"
             >
-              {/* Vote column — needs its own z-index to stay clickable */}
+              {/* Vote column */}
               <div className="relative z-10">
                 <VoteButton
                   postId={post.id}
@@ -181,7 +181,7 @@ export default async function CityPage(props: {
                   aria-label={post.title}
                 />
                 {post.post_type === "photo" && post.media_url ? (
-                  <div className="relative h-[72px] w-[72px] shrink-0 overflow-hidden rounded-xl border border-white/[0.07]">
+                  <div className="relative h-[72px] w-[72px] shrink-0 overflow-hidden rounded-xl border border-gray-200 dark:border-white/[0.07]">
                     <img
                       src={post.media_url}
                       alt={post.title}
@@ -189,7 +189,7 @@ export default async function CityPage(props: {
                     />
                   </div>
                 ) : post.post_type === "video" ? (
-                  <div className="flex h-[72px] w-[72px] shrink-0 items-center justify-center rounded-xl border border-white/[0.07] bg-white/[0.04] text-2xl">
+                  <div className="flex h-[72px] w-[72px] shrink-0 items-center justify-center rounded-xl border border-gray-200 bg-gray-100 text-2xl dark:border-white/[0.07] dark:bg-white/[0.04]">
                     ▶
                   </div>
                 ) : (
@@ -199,24 +199,24 @@ export default async function CityPage(props: {
                 )}
                 <div className="pointer-events-none min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <h3 className="text-[15px] font-semibold leading-snug tracking-[-0.01em]">
+                    <h3 className="text-[15px] font-semibold leading-snug tracking-[-0.01em] text-gray-900 dark:text-white">
                       {post.title}
                     </h3>
                     {post.post_type !== "text" && (
-                      <span className="shrink-0 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white/30 ring-1 ring-white/10">
+                      <span className="shrink-0 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-gray-400 ring-1 ring-gray-200 dark:text-white/30 dark:ring-white/10">
                         {post.post_type}
                       </span>
                     )}
                   </div>
                   {post.body && (
-                    <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-white/40">
+                    <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-gray-500 dark:text-white/40">
                       {post.body}
                     </p>
                   )}
-                  <div className="mt-2.5 flex gap-4 text-xs text-white/25">
+                  <div className="mt-2.5 flex gap-4 text-xs text-gray-400 dark:text-white/25">
                     <Link
                       href={`/profile/${username}`}
-                      className="relative pointer-events-auto font-medium text-white/45 hover:text-blue-400"
+                      className="pointer-events-auto relative font-medium text-gray-500 hover:text-blue-500 dark:text-white/45 dark:hover:text-blue-400"
                     >
                       @{username}
                     </Link>
@@ -230,7 +230,7 @@ export default async function CityPage(props: {
         })}
 
         {scored.length === 0 && (
-          <div className="py-20 text-center text-sm text-white/25">
+          <div className="py-20 text-center text-sm text-gray-400 dark:text-white/25">
             No discussions yet — be the first to post!
           </div>
         )}

@@ -132,25 +132,25 @@ export default function NewPostPage() {
     <div className="mx-auto max-w-2xl px-6 py-8">
       <button
         onClick={() => router.back()}
-        className="mb-6 text-sm text-white/35 hover:text-white/55"
+        className="mb-6 text-sm text-gray-400 hover:text-gray-600 dark:text-white/35 dark:hover:text-white/55"
       >
         ← Back
       </button>
 
-      <h2 className="mb-6 text-2xl font-bold tracking-tight">
+      <h2 className="mb-6 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
         Start a discussion
       </h2>
 
       <div className="flex flex-col gap-4">
         {/* City selector */}
         <div>
-          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-white/35">
+          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-white/35">
             City
           </label>
           <select
             value={citySlug}
             onChange={(e) => setCitySlug(e.target.value)}
-            className="w-full rounded-xl border border-white/[0.08] bg-[#0f0f0f] px-4 py-3 text-sm text-white outline-none focus:border-blue-500/30"
+            className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 outline-none focus:border-blue-500/50 dark:border-white/[0.08] dark:bg-[#0f0f0f] dark:text-white dark:focus:border-blue-500/30"
           >
             <option value="">Select a city...</option>
             {cities.map((c) => (
@@ -162,7 +162,7 @@ export default function NewPostPage() {
         </div>
 
         {/* Post type tabs */}
-        <div className="flex gap-1 rounded-xl border border-white/[0.07] bg-white/[0.03] p-1">
+        <div className="flex gap-1 rounded-xl border border-gray-200 bg-gray-50 p-1 dark:border-white/[0.07] dark:bg-white/[0.03]">
           {TABS.map((tab) => (
             <button
               key={tab.value}
@@ -172,8 +172,8 @@ export default function NewPostPage() {
               }}
               className={`flex flex-1 items-center justify-center gap-2 rounded-lg py-2 text-sm font-semibold transition-colors ${
                 postType === tab.value
-                  ? "bg-white/[0.08] text-white"
-                  : "text-white/30 hover:text-white/55"
+                  ? "bg-white text-gray-900 shadow-sm dark:bg-white/[0.08] dark:text-white dark:shadow-none"
+                  : "text-gray-400 hover:text-gray-600 dark:text-white/30 dark:hover:text-white/55"
               }`}
             >
               <span>{tab.icon}</span>
@@ -184,21 +184,21 @@ export default function NewPostPage() {
 
         {/* Title */}
         <div>
-          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-white/35">
+          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-white/35">
             Title
           </label>
           <input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="What's on your mind?"
-            className="w-full rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 text-[15px] text-white outline-none placeholder:text-white/20 focus:border-blue-500/30"
+            className="w-full rounded-xl border border-gray-200 bg-gray-100 px-4 py-3 text-[15px] text-gray-900 outline-none placeholder:text-gray-400 focus:border-blue-500/50 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-white dark:placeholder:text-white/20 dark:focus:border-blue-500/30"
           />
         </div>
 
         {/* Photo upload */}
         {postType === "photo" && (
           <div>
-            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-white/35">
+            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-white/35">
               Photo
             </label>
             <input
@@ -209,7 +209,7 @@ export default function NewPostPage() {
               className="hidden"
             />
             {preview ? (
-              <div className="relative overflow-hidden rounded-xl border border-white/[0.08]">
+              <div className="relative overflow-hidden rounded-xl border border-gray-200 dark:border-white/[0.08]">
                 <img
                   src={preview}
                   alt="Preview"
@@ -229,7 +229,7 @@ export default function NewPostPage() {
             ) : (
               <button
                 onClick={() => fileRef.current?.click()}
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-white/[0.12] bg-white/[0.02] py-10 text-sm text-white/30 transition-colors hover:border-white/20 hover:text-white/50"
+                className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-gray-300 bg-gray-50 py-10 text-sm text-gray-400 transition-colors hover:border-gray-400 hover:text-gray-600 dark:border-white/[0.12] dark:bg-white/[0.02] dark:text-white/30 dark:hover:border-white/20 dark:hover:text-white/50"
               >
                 <span className="text-2xl">📷</span>
                 Click to choose a photo
@@ -241,28 +241,28 @@ export default function NewPostPage() {
         {/* Video URL */}
         {postType === "video" && (
           <div>
-            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-white/35">
+            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-white/35">
               Video URL
             </label>
             <input
               value={videoUrl}
               onChange={(e) => setVideoUrl(e.target.value)}
               placeholder="https://youtube.com/watch?v=... or direct video URL"
-              className="w-full rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 text-[15px] text-white outline-none placeholder:text-white/20 focus:border-blue-500/30"
+              className="w-full rounded-xl border border-gray-200 bg-gray-100 px-4 py-3 text-[15px] text-gray-900 outline-none placeholder:text-gray-400 focus:border-blue-500/50 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-white dark:placeholder:text-white/20 dark:focus:border-blue-500/30"
             />
             {videoUrl && isYouTube(videoUrl) && (
-              <p className="mt-1.5 text-xs text-white/30">
+              <p className="mt-1.5 text-xs text-gray-400 dark:text-white/30">
                 YouTube link detected — will be embedded as a player.
               </p>
             )}
           </div>
         )}
 
-        {/* Body — all post types */}
+        {/* Body */}
         <div>
-          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-white/35">
+          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-white/35">
             {postType === "text" ? "Details" : "Caption"}{" "}
-            <span className="normal-case text-white/20">(optional)</span>
+            <span className="normal-case text-gray-300 dark:text-white/20">(optional)</span>
           </label>
           <textarea
             value={body}
@@ -273,23 +273,23 @@ export default function NewPostPage() {
                 : "Add a caption or description..."
             }
             rows={postType === "text" ? 6 : 3}
-            className="w-full resize-y rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 text-sm leading-relaxed text-white outline-none placeholder:text-white/20 focus:border-blue-500/30"
+            className="w-full resize-y rounded-xl border border-gray-200 bg-gray-100 px-4 py-3 text-sm leading-relaxed text-gray-900 outline-none placeholder:text-gray-400 focus:border-blue-500/50 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-white dark:placeholder:text-white/20 dark:focus:border-blue-500/30"
           />
         </div>
 
-        {error && <p className="text-sm text-red-400">{error}</p>}
+        {error && <p className="text-sm text-red-500 dark:text-red-400">{error}</p>}
 
         <div className="flex justify-end gap-2.5">
           <button
             onClick={() => router.back()}
-            className="rounded-xl border border-white/10 px-5 py-2.5 text-sm text-white/45 hover:bg-white/5"
+            className="rounded-xl border border-gray-200 px-5 py-2.5 text-sm text-gray-500 hover:bg-gray-100 dark:border-white/10 dark:text-white/45 dark:hover:bg-white/5"
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
             disabled={!filled || loading}
-            className="rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-[0_0_24px_rgba(59,130,246,0.2)] disabled:from-white/[0.06] disabled:to-white/[0.06] disabled:text-white/25 disabled:shadow-none"
+            className="rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-[0_0_24px_rgba(59,130,246,0.2)] disabled:from-gray-200 disabled:to-gray-200 disabled:text-gray-400 disabled:shadow-none dark:disabled:from-white/[0.06] dark:disabled:to-white/[0.06] dark:disabled:text-white/25"
           >
             {loading ? "Posting..." : "Post"}
           </button>

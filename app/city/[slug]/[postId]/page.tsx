@@ -18,7 +18,7 @@ function VideoEmbed({ url }: { url: string }) {
   const embedUrl = youtubeEmbedUrl(url);
   if (embedUrl) {
     return (
-      <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-white/[0.07]">
+      <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-gray-200 dark:border-white/[0.07]">
         <iframe
           src={embedUrl}
           className="h-full w-full"
@@ -32,7 +32,7 @@ function VideoEmbed({ url }: { url: string }) {
     <video
       src={url}
       controls
-      className="w-full rounded-xl border border-white/[0.07]"
+      className="w-full rounded-xl border border-gray-200 dark:border-white/[0.07]"
     />
   );
 }
@@ -118,24 +118,24 @@ export default async function PostPage({
     <div className="mx-auto max-w-2xl px-6 py-8">
       <Link
         href={`/city/${slug}`}
-        className="mb-5 inline-flex items-center gap-1.5 text-sm text-white/35 hover:text-white/55"
+        className="mb-5 inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-600 dark:text-white/35 dark:hover:text-white/55"
       >
         ← Back to discussions
       </Link>
 
       {/* Post */}
-      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.03] px-6 py-5">
+      <div className="rounded-2xl border border-gray-200 bg-gray-50 px-6 py-5 dark:border-white/[0.06] dark:bg-white/[0.03]">
         <div className="mb-4 flex items-center gap-3">
           <Avatar username={author} size={40} />
           <div className="flex flex-1 items-center justify-between">
             <div>
               <Link
                 href={`/profile/${author}`}
-                className="text-sm font-semibold hover:text-blue-400"
+                className="text-sm font-semibold text-gray-900 hover:text-blue-500 dark:text-white dark:hover:text-blue-400"
               >
                 @{author}
               </Link>
-              <span className="ml-2.5 text-xs text-white/25">
+              <span className="ml-2.5 text-xs text-gray-400 dark:text-white/25">
                 {timeAgo(post.created_at)}
               </span>
             </div>
@@ -149,12 +149,12 @@ export default async function PostPage({
           </div>
         </div>
 
-        <h1 className="mb-3 text-xl font-bold leading-snug tracking-[-0.02em]">
+        <h1 className="mb-3 text-xl font-bold leading-snug tracking-[-0.02em] text-gray-900 dark:text-white">
           {post.title}
         </h1>
 
         {post.post_type === "photo" && post.media_url && (
-          <div className="mb-4 overflow-hidden rounded-xl border border-white/[0.07]">
+          <div className="mb-4 overflow-hidden rounded-xl border border-gray-200 dark:border-white/[0.07]">
             <img
               src={post.media_url}
               alt={post.title}
@@ -170,13 +170,13 @@ export default async function PostPage({
         )}
 
         {post.body && (
-          <p className="text-[15px] leading-relaxed text-white/55">
+          <p className="text-[15px] leading-relaxed text-gray-600 dark:text-white/55">
             {post.body}
           </p>
         )}
 
         {/* Vote row */}
-        <div className="mt-5 border-t border-white/[0.05] pt-4">
+        <div className="mt-5 border-t border-gray-100 pt-4 dark:border-white/[0.05]">
           <VoteButton
             postId={postId}
             initialScore={score}
@@ -188,7 +188,7 @@ export default async function PostPage({
 
       {/* Comments */}
       <div className="mt-8">
-        <h3 className="mb-4 text-xs font-semibold uppercase tracking-widest text-white/40">
+        <h3 className="mb-4 text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-white/40">
           {comments?.length || 0} replies
         </h3>
 
@@ -198,17 +198,17 @@ export default async function PostPage({
             return (
               <div
                 key={c.id}
-                className="rounded-xl border border-white/5 bg-white/[0.02] px-5 py-4"
+                className="rounded-xl border border-gray-100 bg-gray-50 px-5 py-4 dark:border-white/5 dark:bg-white/[0.02]"
               >
                 <div className="mb-2 flex items-center gap-2.5">
                   <Avatar username={cAuthor} size={28} />
                   <Link
                     href={`/profile/${cAuthor}`}
-                    className="text-sm font-semibold hover:text-blue-400"
+                    className="text-sm font-semibold text-gray-900 hover:text-blue-500 dark:text-white dark:hover:text-blue-400"
                   >
                     @{cAuthor}
                   </Link>
-                  <span className="text-[11px] text-white/20">
+                  <span className="text-[11px] text-gray-400 dark:text-white/20">
                     {timeAgo(c.created_at)}
                   </span>
                   <div className="ml-auto">
@@ -219,7 +219,7 @@ export default async function PostPage({
                     />
                   </div>
                 </div>
-                <p className="pl-[38px] text-sm leading-relaxed text-white/50">
+                <p className="pl-[38px] text-sm leading-relaxed text-gray-600 dark:text-white/50">
                   {c.body}
                 </p>
               </div>
