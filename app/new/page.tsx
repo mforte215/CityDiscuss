@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { Suspense, useEffect, useState, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { RichTextEditor } from "@/components/rich-text-editor";
@@ -18,7 +18,7 @@ function isYouTube(url: string) {
   return /youtube\.com|youtu\.be/.test(url);
 }
 
-export default function NewPostPage() {
+function NewPostPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [cities, setCities] = useState<City[]>([]);
@@ -121,7 +121,11 @@ export default function NewPostPage() {
     });
 
     if (insertError) {
-      setError(insertError.message);
+      setError(
+        insertError.message.includes("row-level security")
+          ? "You're posting too quickly — please wait a moment before posting again."
+          : insertError.message,
+      );
       setLoading(false);
       return;
     }
@@ -297,5 +301,13 @@ export default function NewPostPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function NewPostPage() {
+  return (
+    <Suspense>
+      <NewPostPageContent />
+    </Suspense>
   );
 }

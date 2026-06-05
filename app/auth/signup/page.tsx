@@ -1,13 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { AuthForm } from "@/components/auth-form";
+import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   title: "Create account — CityDiscuss",
   description: "Sign up and start discussing what matters in your city.",
 };
 
-export default function SignupPage() {
+export default async function SignupPage() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user) redirect("/");
+
   return (
     <div className="mx-auto max-w-sm px-6 py-20">
       <h1 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">

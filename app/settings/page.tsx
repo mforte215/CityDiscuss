@@ -4,7 +4,7 @@
 export const dynamic = "force-dynamic";
 
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { useTheme } from "@/components/theme-provider";
@@ -12,6 +12,8 @@ import { Avatar } from "@/components/avatar";
 
 export default function SettingsPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isWelcome = searchParams.get("welcome") === "1";
   const { theme, toggle } = useTheme();
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -157,6 +159,29 @@ export default function SettingsPage() {
 
   return (
     <div className="mx-auto max-w-sm px-6 py-20">
+
+      {/* Welcome banner — shown after signup */}
+      {isWelcome && (
+        <div className="mb-6 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 px-5 py-4 text-white shadow-[0_0_24px_rgba(59,130,246,0.3)]">
+          <p className="text-base font-bold">Welcome to CityDiscuss! 🎉</p>
+          <p className="mt-1 text-sm text-blue-100">
+            Set a username so the community knows who you are, then jump into a discussion.
+          </p>
+        </div>
+      )}
+
+      {/* No username nudge — shown if profile exists but username is missing */}
+      {!isWelcome && !current && !loading && (
+        <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 dark:border-amber-500/20 dark:bg-amber-500/[0.06]">
+          <p className="text-sm font-medium text-amber-700 dark:text-amber-400">
+            You haven't set a username yet
+          </p>
+          <p className="mt-0.5 text-xs text-amber-600 dark:text-amber-500/80">
+            Choose one below to start posting and commenting.
+          </p>
+        </div>
+      )}
+
       <h1 className="mb-1 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
         Settings
       </h1>

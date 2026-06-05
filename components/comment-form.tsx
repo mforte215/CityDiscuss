@@ -40,7 +40,11 @@ export function CommentForm({
     });
 
     if (insertError) {
-      setError(insertError.message);
+      setError(
+        insertError.message.includes("row-level security")
+          ? "You're commenting too quickly — please wait a moment."
+          : insertError.message,
+      );
       setLoading(false);
       return;
     }

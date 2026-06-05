@@ -21,6 +21,10 @@ function timeAgo(date: string) {
   return `${days}d ago`;
 }
 
+function stripHtml(html: string) {
+  return html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+}
+
 function hotScore(score: number, createdAt: string) {
   const ageHours = (Date.now() - new Date(createdAt).getTime()) / 1000 / 3600;
   return score / Math.pow(ageHours + 2, 1.5);
@@ -241,7 +245,7 @@ export default async function ForumPage(props: {
                 {/* Body preview */}
                 {post.body && (
                   <p className="mt-0.5 line-clamp-1 text-sm text-gray-500 dark:text-white/40">
-                    {post.body}
+                    {stripHtml(post.body)}
                   </p>
                 )}
 

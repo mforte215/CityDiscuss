@@ -60,7 +60,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
       }
     }
 
-    router.push("/");
+    router.push(isSignup ? "/settings?welcome=1" : "/");
     router.refresh();
   }
 

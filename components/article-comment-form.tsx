@@ -31,7 +31,11 @@ export function ArticleCommentForm({ articleId }: { articleId: string }) {
       .insert({ article_id: articleId, user_id: user.id, body: body.trim() });
 
     if (insertError) {
-      setError(insertError.message);
+      setError(
+        insertError.message.includes("row-level security")
+          ? "You're commenting too quickly — please wait a moment."
+          : insertError.message,
+      );
       setLoading(false);
       return;
     }

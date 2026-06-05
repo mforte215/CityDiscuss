@@ -97,8 +97,11 @@ export function NavAuth() {
         <Link
           href="/settings"
           aria-label="Settings"
-          className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-700 dark:text-white/35 dark:hover:bg-white/[0.06] dark:hover:text-white/70"
+          className="relative flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-700 dark:text-white/35 dark:hover:bg-white/[0.06] dark:hover:text-white/70"
         >
+          {!username && (
+            <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-amber-400" />
+          )}
           <svg
             viewBox="0 0 24 24"
             className="h-4 w-4"

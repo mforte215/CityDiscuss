@@ -7,6 +7,10 @@ export const metadata: Metadata = {
   description: "Search posts and articles across CityDiscuss.",
 };
 
+function stripHtml(html: string) {
+  return html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+}
+
 function timeAgo(date: string) {
   const seconds = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
   if (seconds < 60) return "just now";
@@ -143,7 +147,7 @@ export default async function SearchPage(props: {
                   </p>
                   {post.body && (
                     <p className="mt-0.5 line-clamp-1 text-sm text-gray-500 dark:text-white/40">
-                      {post.body}
+                      {stripHtml(post.body)}
                     </p>
                   )}
                   <div className="mt-1 flex gap-3 text-xs text-gray-400 dark:text-white/25">
