@@ -39,15 +39,15 @@ export default function RootLayout({
       </head>
       <body>
         <ThemeProvider>
-          <nav className="sticky top-0 z-50 flex h-14 items-center justify-between border-b border-black/[0.07] bg-white/85 px-6 backdrop-blur-xl dark:border-white/[0.06] dark:bg-[rgba(10,10,14,0.85)]">
-            <Link href="/" className="flex items-center gap-2">
+          <nav className="sticky top-0 z-50 flex h-14 items-center justify-between gap-2 border-b border-black/[0.07] bg-white/85 px-3 backdrop-blur-xl sm:px-6 dark:border-white/[0.06] dark:bg-[rgba(10,10,14,0.85)]">
+            <Link href="/" className="flex min-w-0 shrink items-center gap-2">
               {/* Light logo */}
               <Image
                 src="/logo.png"
                 alt="CityDiscuss"
                 width={32}
                 height={32}
-                className="rounded-md block dark:hidden"
+                className="block shrink-0 rounded-md dark:hidden"
               />
               {/* Dark logo */}
               <Image
@@ -55,9 +55,9 @@ export default function RootLayout({
                 alt="CityDiscuss"
                 width={32}
                 height={32}
-                className="rounded-md hidden dark:block"
+                className="hidden shrink-0 rounded-md dark:block"
               />
-              <span className="bg-gradient-to-br from-blue-500 to-blue-600 bg-clip-text text-lg font-bold tracking-tight text-transparent">
+              <span className="truncate bg-gradient-to-br from-blue-500 to-blue-600 bg-clip-text text-lg font-bold tracking-tight text-transparent">
                 CityDiscuss
               </span>
             </Link>

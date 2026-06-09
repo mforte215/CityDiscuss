@@ -58,7 +58,7 @@ export function NavAuth() {
   const forumLink = (
     <Link
       href="/forum"
-      className="rounded-lg px-3 py-1.5 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-800 dark:text-white/40 dark:hover:bg-white/[0.06] dark:hover:text-white/70"
+      className="hidden rounded-lg px-3 py-1.5 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-800 sm:inline-block dark:text-white/40 dark:hover:bg-white/[0.06] dark:hover:text-white/70"
     >
       Forum
     </Link>
@@ -68,7 +68,7 @@ export function NavAuth() {
     <Link
       href="/search"
       aria-label="Search"
-      className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-700 dark:text-white/35 dark:hover:bg-white/[0.06] dark:hover:text-white/70"
+      className="hidden h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-700 sm:flex dark:text-white/35 dark:hover:bg-white/[0.06] dark:hover:text-white/70"
     >
       <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
         <circle cx="11" cy="11" r="8" />
@@ -126,18 +126,18 @@ export function NavAuth() {
   }
 
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex shrink-0 items-center gap-1">
       {forumLink}
       {searchLink}
       <Link
         href="/auth/login"
-        className="rounded-lg border border-gray-200 px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-100 dark:border-white/10 dark:text-white/70 dark:hover:bg-white/5"
+        className="whitespace-nowrap rounded-lg border border-gray-200 px-2.5 py-1.5 text-sm text-gray-600 hover:bg-gray-100 sm:px-4 dark:border-white/10 dark:text-white/70 dark:hover:bg-white/5"
       >
         Log in
       </Link>
       <Link
         href="/auth/signup"
-        className="rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 px-4 py-1.5 text-sm font-semibold text-white"
+        className="whitespace-nowrap rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 px-2.5 py-1.5 text-sm font-semibold text-white sm:px-4"
       >
         Sign up
       </Link>
