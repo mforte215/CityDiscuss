@@ -41,14 +41,8 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // Protect /admin/* routes server-side
-  if (pathname.startsWith("/admin")) {
-    if (!user) {
-      const loginUrl = request.nextUrl.clone();
-      loginUrl.pathname = "/auth/login";
-      return NextResponse.redirect(loginUrl);
-    }
-
+  // Protect /admin/* routes server-side — verify is_admin
+  if (pathname.startsWith("/admin") && user) {
     const { data: profile } = await supabase
       .from("profiles")
       .select("is_admin")
