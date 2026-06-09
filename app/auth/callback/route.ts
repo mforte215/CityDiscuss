@@ -27,16 +27,32 @@ export async function GET(request: Request) {
           const email = user.email || "";
           const googleName =
             user.user_metadata?.full_name || user.user_metadata?.name || "";
-          const username =
-            googleName.toLowerCase().replace(/\s+/g, "_") ||
+          const baseUsername =
+            googleName.toLowerCase().replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, "") ||
             email.split("@")[0];
 
-          await supabase.from("profiles").insert({
-            id: user.id,
-            username: username,
-            display_name: googleName || username,
-            avatar_url: user.user_metadata?.avatar_url || null,
-          });
+          // Retry with a random suffix on username collision
+          let username = baseUsername;
+          let inserted = false;
+          for (let attempt = 0; attempt < 5; attempt++) {
+            const { error: insertError } = await supabase.from("profiles").insert({
+              id: user.id,
+              username,
+              display_name: googleName || username,
+              avatar_url: user.user_metadata?.avatar_url || null,
+            });
+            if (!insertError) { inserted = true; break; }
+            if (insertError.code === "23505") {
+              // unique violation — try a new suffix
+              username = `${baseUsername}_${Math.floor(1000 + Math.random() * 9000)}`;
+            } else {
+              break;
+            }
+          }
+
+          if (!inserted) {
+            return NextResponse.redirect(`${origin}/auth/login`);
+          }
         }
       }
 

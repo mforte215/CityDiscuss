@@ -12,6 +12,7 @@ export default function EditPostPage(props: {
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
+  const [userId, setUserId] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -41,6 +42,7 @@ export default function EditPostPage(props: {
 
       setTitle(post.title);
       setBody(post.body ?? "");
+      setUserId(user.id);
       setLoading(false);
     });
   }, [postId, slug, router]);
@@ -54,7 +56,8 @@ export default function EditPostPage(props: {
     const { error: updateError } = await supabase
       .from("posts")
       .update({ title: title.trim(), body: body.trim() || null })
-      .eq("id", postId);
+      .eq("id", postId)
+      .eq("user_id", userId);
 
     if (updateError) {
       setError(updateError.message);

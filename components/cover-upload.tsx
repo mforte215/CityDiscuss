@@ -35,6 +35,10 @@ export function CoverUpload({
       setUploadError("Please upload an image file.");
       return;
     }
+    if (file.size > 5 * 1024 * 1024) {
+      setUploadError("Image must be 5 MB or smaller.");
+      return;
+    }
     setUploading(true);
     setUploadError("");
 
@@ -198,7 +202,7 @@ export function CoverUpload({
                   Click to upload or drag & drop
                 </p>
                 <p className="mt-0.5 text-xs text-gray-400 dark:text-white/25">
-                  PNG, JPG, WebP — any size
+                  PNG, JPG, WebP — max 5 MB
                 </p>
               </div>
             </>

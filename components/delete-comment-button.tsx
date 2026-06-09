@@ -21,7 +21,7 @@ export function DeleteCommentButton({
     if (!confirmed) return;
 
     const supabase = createClient();
-    await supabase.from("comments").delete().eq("id", commentId);
+    await supabase.from("comments").delete().eq("id", commentId).eq("user_id", currentUserId);
     router.refresh();
   }
 

@@ -15,7 +15,7 @@ const TABS: { value: PostType; label: string; icon: string }[] = [
 ];
 
 function isYouTube(url: string) {
-  return /youtube\.com|youtu\.be/.test(url);
+  return /^https?:\/\/(www\.)?(youtube\.com\/watch|youtu\.be\/)/.test(url);
 }
 
 function NewPostPageContent() {
@@ -91,6 +91,11 @@ function NewPostPageContent() {
     let media_url: string | null = null;
 
     if (postType === "photo" && file) {
+      if (file.size > 10 * 1024 * 1024) {
+        setError("Image must be 10 MB or smaller.");
+        setLoading(false);
+        return;
+      }
       const ext = file.name.split(".").pop();
       const path = `${user.id}/${Date.now()}.${ext}`;
       const { error: uploadError } = await supabase.storage
@@ -108,7 +113,13 @@ function NewPostPageContent() {
         .getPublicUrl(path);
       media_url = urlData.publicUrl;
     } else if (postType === "video") {
-      media_url = videoUrl.trim();
+      const trimmed = videoUrl.trim();
+      if (!isYouTube(trimmed)) {
+        setError("Only YouTube links are supported (youtube.com/watch or youtu.be).");
+        setLoading(false);
+        return;
+      }
+      media_url = trimmed;
     }
 
     const { error: insertError } = await supabase.from("posts").insert({
@@ -235,10 +246,11 @@ function NewPostPageContent() {
             ) : (
               <button
                 onClick={() => fileRef.current?.click()}
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-gray-300 bg-gray-50 py-10 text-sm text-gray-400 transition-colors hover:border-gray-400 hover:text-gray-600 dark:border-white/[0.12] dark:bg-white/[0.02] dark:text-white/30 dark:hover:border-white/20 dark:hover:text-white/50"
+                className="flex w-full flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-gray-300 bg-gray-50 py-10 text-sm text-gray-400 transition-colors hover:border-gray-400 hover:text-gray-600 dark:border-white/[0.12] dark:bg-white/[0.02] dark:text-white/30 dark:hover:border-white/20 dark:hover:text-white/50"
               >
                 <span className="text-2xl">📷</span>
-                Click to choose a photo
+                <span>Click to choose a photo</span>
+                <span className="text-xs text-gray-300 dark:text-white/20">Max 10 MB</span>
               </button>
             )}
           </div>
@@ -253,12 +265,12 @@ function NewPostPageContent() {
             <input
               value={videoUrl}
               onChange={(e) => setVideoUrl(e.target.value)}
-              placeholder="https://youtube.com/watch?v=... or direct video URL"
+              placeholder="https://youtube.com/watch?v=..."
               className="w-full rounded-xl border border-gray-200 bg-gray-100 px-4 py-3 text-[15px] text-gray-900 outline-none placeholder:text-gray-400 focus:border-blue-500/50 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-white dark:placeholder:text-white/20 dark:focus:border-blue-500/30"
             />
-            {videoUrl && isYouTube(videoUrl) && (
-              <p className="mt-1.5 text-xs text-gray-400 dark:text-white/30">
-                YouTube link detected — will be embedded as a player.
+            {videoUrl && (
+              <p className={`mt-1.5 text-xs ${isYouTube(videoUrl) ? "text-gray-400 dark:text-white/30" : "text-red-500 dark:text-red-400"}`}>
+                {isYouTube(videoUrl) ? "YouTube link detected — will be embedded as a player." : "Only YouTube links are supported."}
               </p>
             )}
           </div>

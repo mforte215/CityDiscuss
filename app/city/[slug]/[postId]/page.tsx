@@ -7,6 +7,7 @@ import { VoteButton } from "@/components/vote-button";
 import { DeleteEditButtons } from "@/components/delete-edit-buttons";
 import { DeleteCommentButton } from "@/components/delete-comment-button";
 import { Avatar } from "@/components/avatar";
+import { sanitizeContent } from "@/lib/sanitize";
 
 export async function generateMetadata(props: {
   params: Promise<{ slug: string; postId: string }>;
@@ -189,7 +190,7 @@ export default async function PostPage({
               dark:prose-headings:text-white
               dark:prose-strong:text-white
               dark:prose-blockquote:text-white/50"
-            dangerouslySetInnerHTML={{ __html: post.body }}
+            dangerouslySetInnerHTML={{ __html: sanitizeContent(post.body) }}
           />
         )}
 

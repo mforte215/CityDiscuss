@@ -93,6 +93,11 @@ function SettingsPageContent() {
     const file = e.target.files?.[0];
     if (!file || !userId) return;
 
+    if (file.size > 5 * 1024 * 1024) {
+      setError("Avatar must be 5 MB or smaller.");
+      return;
+    }
+
     setUploadingAvatar(true);
     setAvatarSuccess(false);
 
@@ -224,6 +229,7 @@ function SettingsPageContent() {
               >
                 {uploadingAvatar ? "Uploading…" : "Change photo"}
               </button>
+              <p className="text-xs text-gray-400 dark:text-white/25">Max 5 MB</p>
               {avatarUrl && (
                 <button
                   onClick={handleRemoveAvatar}

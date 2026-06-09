@@ -140,6 +140,7 @@ function ImagePopover({ editor, userId }: { editor: Editor; userId?: string }) {
 
   async function handleUpload(file: File) {
     if (!file.type.startsWith("image/")) return;
+    if (file.size > 5 * 1024 * 1024) return;
     setUploading(true);
     const supabase = createClient();
     const ext = file.name.split(".").pop();
@@ -212,9 +213,10 @@ function ImagePopover({ editor, userId }: { editor: Editor; userId?: string }) {
                   type="button"
                   onClick={() => fileRef.current?.click()}
                   disabled={uploading}
-                  className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-gray-200 py-5 text-sm text-gray-400 hover:border-gray-300 hover:text-gray-600 disabled:opacity-50 dark:border-white/10 dark:text-white/30 dark:hover:border-white/20"
+                  className="flex w-full flex-col items-center justify-center gap-0.5 rounded-lg border border-dashed border-gray-200 py-5 text-sm text-gray-400 hover:border-gray-300 hover:text-gray-600 disabled:opacity-50 dark:border-white/10 dark:text-white/30 dark:hover:border-white/20"
                 >
-                  {uploading ? "Uploading…" : "Click to choose image"}
+                  <span>{uploading ? "Uploading…" : "Click to choose image"}</span>
+                  {!uploading && <span className="text-xs text-gray-300 dark:text-white/20">Max 5 MB</span>}
                 </button>
               </>
             ) : (

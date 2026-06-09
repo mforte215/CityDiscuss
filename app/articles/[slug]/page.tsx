@@ -7,6 +7,7 @@ import { Avatar } from "@/components/avatar";
 import { ArticleCommentForm } from "@/components/article-comment-form";
 import { DeleteArticleCommentButton } from "@/components/delete-article-comment-button";
 import { ShareButton } from "@/components/share-button";
+import { sanitizeContent } from "@/lib/sanitize";
 
 // Cached so generateMetadata and the page share one DB round-trip
 const getArticle = cache(async (slug: string) => {
@@ -215,7 +216,7 @@ export default async function ArticlePage({
             prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4
             prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3
             prose-p:leading-relaxed prose-p:mb-5
-            prose-a:text-blue-500 prose-a:no-underline hover:prose-a:underline
+            prose-a:text-blue-500 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline
             dark:prose-p:text-white/70
             dark:prose-strong:text-white
             prose-blockquote:border-blue-500
@@ -223,7 +224,7 @@ export default async function ArticlePage({
             prose-img:rounded-xl prose-img:border prose-img:border-gray-200
             dark:prose-img:border-white/[0.07]
             prose-hr:border-gray-200 dark:prose-hr:border-white/10"
-          dangerouslySetInnerHTML={{ __html: article.body }}
+          dangerouslySetInnerHTML={{ __html: sanitizeContent(article.body) }}
         />
       )}
 
