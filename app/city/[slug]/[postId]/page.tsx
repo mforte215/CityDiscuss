@@ -16,16 +16,25 @@ export async function generateMetadata(props: {
   const supabase = await createClient();
   const { data: post } = await supabase
     .from("posts")
-    .select("title, body")
+    .select("title, body, post_type, media_url")
     .eq("id", postId)
     .single();
   if (!post) return {};
+  const description = post.body ? post.body.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 150) : undefined;
+  const image = post.post_type === "photo" && post.media_url ? post.media_url : undefined;
   return {
     title: `${post.title} — CityDiscuss`,
-    description: post.body ? post.body.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 150) : undefined,
+    description,
     openGraph: {
       title: post.title,
-      description: post.body ? post.body.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 150) : undefined,
+      description,
+      images: image ? [{ url: image }] : [],
+    },
+    twitter: {
+      card: image ? "summary_large_image" : "summary",
+      title: post.title,
+      description,
+      images: image ? [image] : [],
     },
   };
 }
