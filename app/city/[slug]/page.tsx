@@ -33,10 +33,20 @@ export async function generateMetadata(props: {
   const supabase = await createClient();
   const { data: city } = await supabase
     .from("cities")
-    .select("name, state")
+    .select("id, name, state")
     .eq("slug", slug)
     .single();
   if (!city) return {};
+  const { count } = await supabase
+    .from("posts")
+    .select("id", { count: "exact", head: true })
+    .eq("city_id", city.id);
+  if (!count) {
+    return {
+      title: `${city.name} — CityDiscuss`,
+      robots: { index: false, follow: true },
+    };
+  }
   return {
     title: `${city.name} — CityDiscuss`,
     description: `Local discussions, news, and community for ${city.name}, ${city.state}.`,

@@ -7,7 +7,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const supabase = await createClient();
 
   const [{ data: cities }, { data: articles }, { data: tags }] = await Promise.all([
-    supabase.from("cities").select("slug"),
+    supabase.from("cities").select("slug, posts!inner(id)"),
     supabase
       .from("articles")
       .select("slug, published_at")

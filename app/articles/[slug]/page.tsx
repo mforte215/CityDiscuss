@@ -33,14 +33,18 @@ export async function generateMetadata(props: {
     openGraph: {
       title: article.title,
       description: article.subtitle ?? undefined,
-      images: article.cover_url ? [{ url: article.cover_url }] : [],
+      images: article.cover_url
+        ? [{ url: `${article.cover_url}?v=${new Date(article.updated_at).getTime()}` }]
+        : [],
       type: "article",
     },
     twitter: {
       card: article.cover_url ? "summary_large_image" : "summary",
       title: article.title,
       description: article.subtitle ?? undefined,
-      images: article.cover_url ? [article.cover_url] : [],
+      images: article.cover_url
+        ? [`${article.cover_url}?v=${new Date(article.updated_at).getTime()}`]
+        : [],
     },
   };
 }
