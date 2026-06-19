@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { NavAuth } from "@/components/nav-auth";
 import { ThemeProvider } from "@/components/theme-provider";
-import { Analytics } from "@vercel/analytics/next";
+import { AnalyticsWrapper } from "@/components/analytics-wrapper";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
@@ -139,7 +139,7 @@ export default function RootLayout({
             </div>
           </footer>
         </ThemeProvider>
-        <Analytics />
+        <AnalyticsWrapper />
         <SpeedInsights />
       </body>
     </html>
