@@ -130,8 +130,31 @@ export default async function PostPage({
     if (vote) userVote = vote.value as 1 | -1;
   }
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "DiscussionForumPosting",
+    headline: post.title,
+    ...(post.body
+      ? { text: post.body.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 500) }
+      : {}),
+    datePublished: post.created_at,
+    author: {
+      "@type": "Person",
+      name: author,
+      url: `${process.env.NEXT_PUBLIC_SITE_URL ?? ""}/profile/${author}`,
+    },
+    url: `${process.env.NEXT_PUBLIC_SITE_URL ?? ""}/city/${slug}/${postId}`,
+    ...(post.post_type === "photo" && post.media_url
+      ? { image: post.media_url }
+      : {}),
+  };
+
   return (
     <div className="mx-auto max-w-2xl px-6 py-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Link
         href={`/city/${slug}`}
         className="mb-5 inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-600 dark:text-white/35 dark:hover:text-white/55"

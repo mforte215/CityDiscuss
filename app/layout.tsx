@@ -11,6 +11,9 @@ import "./globals.css";
 const geist = Geist({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://citydiscuss.com",
+  ),
   title: "CityDiscuss — Your city. Your conversation.",
   description:
     "Real discussions about the places you live. No algorithms, no noise.",

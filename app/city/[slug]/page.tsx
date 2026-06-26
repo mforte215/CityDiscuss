@@ -5,6 +5,74 @@ import { createClient } from "@/lib/supabase/server";
 import { VoteButton } from "@/components/vote-button";
 import { Avatar } from "@/components/avatar";
 
+async function EmptyCityFallback({
+  slug,
+  gradientFrom,
+  gradientTo,
+}: {
+  slug: string;
+  gradientFrom: string;
+  gradientTo: string;
+}) {
+  const supabase = await createClient();
+  const { data: activeCities } = await supabase
+    .from("posts")
+    .select("cities(name, slug)")
+    .neq("cities.slug", slug)
+    .limit(50);
+
+  // Deduplicate and count posts per city
+  const cityMap = new Map<string, { name: string; slug: string; count: number }>();
+  for (const row of activeCities ?? []) {
+    const c = (row as any).cities;
+    if (!c?.slug || c.slug === slug) continue;
+    const existing = cityMap.get(c.slug);
+    if (existing) existing.count++;
+    else cityMap.set(c.slug, { name: c.name, slug: c.slug, count: 1 });
+  }
+  const nearby = Array.from(cityMap.values())
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 6);
+
+  return (
+    <div className="py-16 text-center">
+      <p className="text-2xl font-bold text-gray-900 dark:text-white">Be the first here</p>
+      <p className="mt-2 text-sm text-gray-400 dark:text-white/35">
+        No discussions yet — start one and kick off your local community.
+      </p>
+      <Link
+        href={`/new?city=${slug}`}
+        className="mt-5 inline-flex items-center gap-1.5 rounded-xl px-5 py-2.5 text-sm font-semibold text-white shadow-lg"
+        style={{ background: `linear-gradient(135deg, ${gradientFrom}, ${gradientTo})` }}
+      >
+        + Start the first discussion
+      </Link>
+
+      {nearby.length > 0 && (
+        <div className="mt-14">
+          <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-white/25">
+            Active nearby communities
+          </p>
+          <div className="flex flex-wrap justify-center gap-2">
+            {nearby.map((c) => (
+              <Link
+                key={c.slug}
+                href={`/city/${c.slug}`}
+                className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-2 text-sm font-medium text-gray-600 transition-all hover:border-gray-300 hover:shadow-sm dark:border-white/[0.07] dark:bg-white/[0.02] dark:text-white/50 dark:hover:border-white/15"
+              >
+                {c.name}
+                <span className="ml-1.5 text-xs text-gray-400 dark:text-white/25">
+                  {c.count} {c.count === 1 ? "post" : "posts"}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── City gradient — deterministic per city name ───────────────────
 const GRADIENTS = [
   ["#1d4ed8", "#3b82f6"], // blue
@@ -385,18 +453,7 @@ export default async function CityPage(props: {
           })}
 
           {scored.length === 0 && (
-            <div className="py-20 text-center">
-              <p className="text-sm text-gray-400 dark:text-white/25">
-                No discussions yet.
-              </p>
-              <Link
-                href={`/new?city=${slug}`}
-                className="mt-3 inline-flex items-center gap-1.5 rounded-xl px-5 py-2.5 text-sm font-semibold text-white shadow-lg"
-                style={{ background: `linear-gradient(135deg, ${gradientFrom}, ${gradientTo})` }}
-              >
-                + Start the first discussion
-              </Link>
-            </div>
+            <EmptyCityFallback slug={slug} gradientFrom={gradientFrom} gradientTo={gradientTo} />
           )}
         </div>
       </div>
