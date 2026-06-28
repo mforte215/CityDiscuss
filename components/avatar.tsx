@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 const COLORS = ["#2563eb", "#7c3aed", "#0891b2", "#059669", "#d97706"];
 
 export function Avatar({
@@ -11,11 +13,12 @@ export function Avatar({
 }) {
   if (avatarUrl) {
     return (
-      <img
+      <Image
         src={avatarUrl}
         alt={`${username}'s avatar`}
+        width={size}
+        height={size}
         className="shrink-0 rounded-full object-cover"
-        style={{ width: size, height: size }}
       />
     );
   }

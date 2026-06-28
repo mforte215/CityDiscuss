@@ -125,12 +125,14 @@ export default async function Home(props: {
           {/* Overlay link covers the whole card */}
           <Link href={`/articles/${featured.slug}`} className="absolute inset-0 z-10" aria-label={featured.title} />
           {featured.cover_url && (
-            <div className="aspect-[2.5/1] w-full overflow-hidden">
-              <img
+            <div className="relative aspect-[2.5/1] w-full overflow-hidden">
+              <Image
                 src={featured.cover_url}
                 alt={featured.title}
-                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                fill
+                className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
                 style={{ objectPosition: featured.cover_position ?? "center" }}
+                priority
               />
             </div>
           )}
@@ -144,7 +146,7 @@ export default async function Home(props: {
                   </Link>
                 ) : null,
               )}
-              <span className="text-xs text-gray-400 dark:text-white/40">{timeAgo(featured.published_at)}</span>
+              <span className="text-xs text-gray-400 dark:text-white/40">{featured.published_at ? timeAgo(featured.published_at) : null}</span>
             </div>
             <h2 className="mb-2 text-2xl font-extrabold leading-snug tracking-[-0.02em] text-gray-900 dark:text-white sm:text-3xl">
               {featured.title}
@@ -174,11 +176,12 @@ export default async function Home(props: {
             >
               <Link href={`/articles/${article.slug}`} className="absolute inset-0 z-10" aria-label={article.title} />
               {article.cover_url ? (
-                <div className="aspect-video w-full overflow-hidden">
-                  <img
+                <div className="relative aspect-video w-full overflow-hidden">
+                  <Image
                     src={article.cover_url}
                     alt={article.title}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                     style={{ objectPosition: article.cover_position ?? "center" }}
                   />
                 </div>

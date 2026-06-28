@@ -8,6 +8,7 @@ import { DeleteEditButtons } from "@/components/delete-edit-buttons";
 import { DeleteCommentButton } from "@/components/delete-comment-button";
 import { Avatar } from "@/components/avatar";
 import { sanitizeContent } from "@/lib/sanitize";
+import Image from "next/image";
 
 export async function generateMetadata(props: {
   params: Promise<{ slug: string; postId: string }>;
@@ -195,11 +196,13 @@ export default async function PostPage({
         </h1>
 
         {post.post_type === "photo" && post.media_url && (
-          <div className="mb-4 overflow-hidden rounded-xl border border-gray-200 dark:border-white/[0.07]">
-            <img
+          <div className="relative mb-4 overflow-hidden rounded-xl border border-gray-200 dark:border-white/[0.07]" style={{ aspectRatio: "16/9" }}>
+            <Image
               src={post.media_url}
               alt={post.title}
-              className="w-full object-contain"
+              fill
+              className="object-contain"
+              priority
             />
           </div>
         )}

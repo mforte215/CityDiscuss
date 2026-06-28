@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { VoteButton } from "@/components/vote-button";
 import { Avatar } from "@/components/avatar";
+import Image from "next/image";
 
 async function EmptyCityFallback({
   slug,
@@ -405,10 +406,11 @@ export default async function CityPage(props: {
                   />
                   {post.post_type === "photo" && post.media_url ? (
                     <div className="relative h-[72px] w-[72px] shrink-0 overflow-hidden rounded-xl border border-gray-200 dark:border-white/[0.07]">
-                      <img
+                      <Image
                         src={post.media_url}
                         alt={post.title}
-                        className="h-full w-full object-cover"
+                        fill
+                        className="object-cover"
                       />
                     </div>
                   ) : post.post_type === "video" ? (

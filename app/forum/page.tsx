@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { VoteButton } from "@/components/vote-button";
 import { Avatar } from "@/components/avatar";
 import { CityDropdown } from "@/components/city-dropdown";
+import Image from "next/image";
 
 export const metadata: Metadata = {
   title: "Forum — CityDiscuss",
@@ -207,10 +208,11 @@ export default async function ForumPage(props: {
               {/* Thumbnail */}
               {post.post_type === "photo" && post.media_url ? (
                 <div className="relative mt-0.5 h-14 w-14 shrink-0 overflow-hidden rounded-lg border border-gray-200 dark:border-white/[0.07]">
-                  <img
+                  <Image
                     src={post.media_url}
                     alt={post.title}
-                    className="h-full w-full object-cover"
+                    fill
+                    className="object-cover"
                   />
                 </div>
               ) : post.post_type === "video" ? (

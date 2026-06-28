@@ -8,6 +8,7 @@ import { ArticleCommentForm } from "@/components/article-comment-form";
 import { DeleteArticleCommentButton } from "@/components/delete-article-comment-button";
 import { ShareButton } from "@/components/share-button";
 import { sanitizeContent } from "@/lib/sanitize";
+import Image from "next/image";
 
 // Cached so generateMetadata and the page share one DB round-trip
 const getArticle = cache(async (slug: string) => {
@@ -34,7 +35,7 @@ export async function generateMetadata(props: {
       title: article.title,
       description: article.subtitle ?? undefined,
       images: article.cover_url
-        ? [{ url: `${article.cover_url}?v=${new Date(article.updated_at).getTime()}` }]
+        ? [{ url: `${article.cover_url}?v=${new Date(article.created_at ?? article.published_at).getTime()}` }]
         : [],
       type: "article",
     },
@@ -43,7 +44,7 @@ export async function generateMetadata(props: {
       title: article.title,
       description: article.subtitle ?? undefined,
       images: article.cover_url
-        ? [`${article.cover_url}?v=${new Date(article.updated_at).getTime()}`]
+        ? [`${article.cover_url}?v=${new Date(article.created_at ?? article.published_at).getTime()}`]
         : [],
     },
   };
@@ -201,12 +202,14 @@ export default async function ArticlePage({
 
       {/* Cover image */}
       {article.cover_url && (
-        <div className="mb-10 overflow-hidden rounded-2xl border border-gray-200 dark:border-white/[0.07]">
-          <img
+        <div className="relative mb-10 overflow-hidden rounded-2xl border border-gray-200 dark:border-white/[0.07]" style={{ aspectRatio: "2.5/1" }}>
+          <Image
             src={article.cover_url}
             alt={article.title}
-            className="w-full object-cover"
+            fill
+            className="object-cover"
             style={{ objectPosition: article.cover_position ?? "center" }}
+            priority
           />
         </div>
       )}
@@ -246,11 +249,12 @@ export default async function ArticlePage({
                 className="group overflow-hidden rounded-xl border border-gray-200 bg-gray-50 transition-all hover:border-gray-300 hover:bg-gray-100 dark:border-white/[0.07] dark:bg-white/[0.02] dark:hover:border-white/[0.12] dark:hover:bg-white/[0.04]"
               >
                 {r.cover_url ? (
-                  <div className="aspect-video w-full overflow-hidden">
-                    <img
+                  <div className="relative aspect-video w-full overflow-hidden">
+                    <Image
                       src={r.cover_url}
                       alt={r.title}
-                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.04]"
+                      fill
+                      className="object-cover transition-transform duration-300 group-hover:scale-[1.04]"
                       style={{ objectPosition: r.cover_position ?? "center" }}
                     />
                   </div>

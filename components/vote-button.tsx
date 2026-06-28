@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
@@ -18,11 +18,11 @@ export function VoteButton({
   const router = useRouter();
   const [score, setScore] = useState(initialScore);
   const [userVote, setUserVote] = useState<1 | -1 | 0>(initialUserVote);
-  const [loading, setLoading] = useState(false);
+  const pending = useRef(false);
 
   async function vote(value: 1 | -1) {
-    if (loading) return;
-    setLoading(true);
+    if (pending.current) return;
+    pending.current = true;
 
     const supabase = createClient();
     const {
@@ -31,29 +31,30 @@ export function VoteButton({
 
     if (!user) {
       router.push("/auth/login");
-      setLoading(false);
+      pending.current = false;
       return;
     }
 
     const newVote: 1 | -1 | 0 = userVote === value ? 0 : value;
     const scoreDelta = newVote - userVote;
+
+    // Optimistic update — apply immediately before hitting the DB
+    const prevScore = score;
+    const prevVote = userVote;
     setScore((s) => s + scoreDelta);
     setUserVote(newVote);
 
-    if (newVote === 0) {
-      await supabase
-        .from("post_votes")
-        .delete()
-        .eq("post_id", postId)
-        .eq("user_id", user.id);
-    } else {
-      await supabase
-        .from("post_votes")
-        .upsert({ post_id: postId, user_id: user.id, value: newVote });
+    const { error } = newVote === 0
+      ? await supabase.from("post_votes").delete().eq("post_id", postId).eq("user_id", user.id)
+      : await supabase.from("post_votes").upsert({ post_id: postId, user_id: user.id, value: newVote });
+
+    if (error) {
+      // Revert on failure
+      setScore(prevScore);
+      setUserVote(prevVote);
     }
 
-    setLoading(false);
-    router.refresh();
+    pending.current = false;
   }
 
   const isHorizontal = orientation === "horizontal";
@@ -65,7 +66,6 @@ export function VoteButton({
     >
       <button
         onClick={() => vote(1)}
-        disabled={loading}
         aria-label="Upvote"
         className={`flex h-7 w-7 items-center justify-center rounded-lg transition-colors ${
           userVote === 1
@@ -100,7 +100,6 @@ export function VoteButton({
 
       <button
         onClick={() => vote(-1)}
-        disabled={loading}
         aria-label="Downvote"
         className={`flex h-7 w-7 items-center justify-center rounded-lg transition-colors ${
           userVote === -1

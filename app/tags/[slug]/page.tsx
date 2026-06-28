@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import Image from "next/image";
 
 function timeAgo(date: string) {
   const seconds = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
@@ -77,9 +78,10 @@ export default async function TagPage(props: {
               className="group flex gap-4 rounded-xl border border-gray-200 bg-gray-50 p-4 transition-all hover:border-gray-300 hover:bg-gray-100 dark:border-white/[0.07] dark:bg-white/[0.02] dark:hover:border-white/[0.12] dark:hover:bg-white/[0.04]"
             >
               {article.cover_url && (
-                <div className="h-20 w-28 shrink-0 overflow-hidden rounded-lg">
-                  <img src={article.cover_url} alt={article.title}
-                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.04]"
+                <div className="relative h-20 w-28 shrink-0 overflow-hidden rounded-lg">
+                  <Image src={article.cover_url} alt={article.title}
+                    fill
+                    className="object-cover transition-transform duration-300 group-hover:scale-[1.04]"
                     style={{ objectPosition: article.cover_position ?? "center" }} />
                 </div>
               )}
