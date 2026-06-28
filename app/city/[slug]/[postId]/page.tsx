@@ -2,10 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { CommentForm } from "@/components/comment-form";
+import { RealtimeComments } from "@/components/realtime-comments";
 import { VoteButton } from "@/components/vote-button";
 import { DeleteEditButtons } from "@/components/delete-edit-buttons";
-import { DeleteCommentButton } from "@/components/delete-comment-button";
 import { Avatar } from "@/components/avatar";
 import { sanitizeContent } from "@/lib/sanitize";
 import Image from "next/image";
@@ -242,49 +241,12 @@ export default async function PostPage({
         </div>
       </div>
 
-      {/* Comments */}
-      <div className="mt-8">
-        <h3 className="mb-4 text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-white/40">
-          {comments?.length || 0} replies
-        </h3>
-
-        <div className="flex flex-col gap-0.5">
-          {comments?.map((c) => {
-            const cAuthor = c.profiles?.username || "anonymous";
-            return (
-              <div
-                key={c.id}
-                className="rounded-xl border border-gray-100 bg-gray-50 px-5 py-4 dark:border-white/5 dark:bg-white/[0.02]"
-              >
-                <div className="mb-2 flex items-center gap-2.5">
-                  <Avatar username={cAuthor} avatarUrl={c.profiles?.avatar_url} size={28} />
-                  <Link
-                    href={`/profile/${cAuthor}`}
-                    className="text-sm font-semibold text-gray-900 hover:text-blue-500 dark:text-white dark:hover:text-blue-400"
-                  >
-                    @{cAuthor}
-                  </Link>
-                  <span className="text-[11px] text-gray-400 dark:text-white/20">
-                    {timeAgo(c.created_at)}
-                  </span>
-                  <div className="ml-auto">
-                    <DeleteCommentButton
-                      commentId={c.id}
-                      authorId={c.user_id}
-                      currentUserId={user?.id ?? null}
-                    />
-                  </div>
-                </div>
-                <p className="pl-[38px] text-sm leading-relaxed text-gray-600 dark:text-white/50">
-                  {c.body}
-                </p>
-              </div>
-            );
-          })}
-        </div>
-
-        <CommentForm postId={postId} slug={slug} />
-      </div>
+      <RealtimeComments
+        postId={postId}
+        slug={slug}
+        initialComments={(comments ?? []) as any}
+        currentUserId={user?.id ?? null}
+      />
     </div>
   );
 }

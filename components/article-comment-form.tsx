@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
 import { commentSchema } from "@/lib/schemas";
 
 export function ArticleCommentForm({ articleId }: { articleId: string }) {
@@ -23,27 +22,15 @@ export function ArticleCommentForm({ articleId }: { articleId: string }) {
 
     setLoading(true);
 
-    const supabase = createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const res = await fetch("/api/article-comments", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ articleId, body: body.trim() }),
+    });
 
-    if (!user) {
-      setError("You must be logged in to comment.");
-      setLoading(false);
-      return;
-    }
-
-    const { error: insertError } = await supabase
-      .from("article_comments")
-      .insert({ article_id: articleId, user_id: user.id, body: body.trim() });
-
-    if (insertError) {
-      setError(
-        insertError.message.includes("row-level security")
-          ? "You're commenting too quickly — please wait a moment."
-          : insertError.message,
-      );
+    if (!res.ok) {
+      const data = await res.json();
+      setError(data.error ?? "Something went wrong.");
       setLoading(false);
       return;
     }

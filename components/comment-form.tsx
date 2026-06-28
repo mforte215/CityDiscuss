@@ -1,18 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
 import { commentSchema } from "@/lib/schemas";
 
 export function CommentForm({
   postId,
-  slug,
 }: {
   postId: string;
   slug: string;
 }) {
-  const router = useRouter();
   const [body, setBody] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -29,37 +25,22 @@ export function CommentForm({
 
     setLoading(true);
 
-    const supabase = createClient();
-
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      setError("You must be logged in to comment.");
-      setLoading(false);
-      return;
-    }
-
-    const { error: insertError } = await supabase.from("comments").insert({
-      post_id: postId,
-      user_id: user.id,
-      body: body.trim(),
+    const res = await fetch("/api/comments", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ postId, body: body.trim() }),
     });
 
-    if (insertError) {
-      setError(
-        insertError.message.includes("row-level security")
-          ? "You're commenting too quickly — please wait a moment."
-          : insertError.message,
-      );
+    if (!res.ok) {
+      const data = await res.json();
+      setError(data.error ?? "Something went wrong.");
       setLoading(false);
       return;
     }
 
     setBody("");
     setLoading(false);
-    router.refresh();
+    // No router.refresh() — realtime handles the new comment appearing
   }
 
   return (

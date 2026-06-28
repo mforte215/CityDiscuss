@@ -22,6 +22,7 @@ export const commentSchema = z.object({
     .max(10000, "Comment is too long"),
 });
 
+// Client-side: validates what the user has typed before upload
 export const newPostSchema = z.object({
   citySlug: z.string().min(1, "Select a city"),
   title: z
@@ -29,4 +30,23 @@ export const newPostSchema = z.object({
     .min(3, "Title must be at least 3 characters")
     .max(300, "Title must be 300 characters or less"),
   videoUrl: z.string().url("Enter a valid URL").optional().or(z.literal("")),
+});
+
+// Server-side: full shape sent to the API route after media upload
+export const newPostApiSchema = z.object({
+  citySlug: z.string().min(1),
+  title: z.string().min(3).max(300),
+  postType: z.enum(["text", "photo", "video"]),
+  body: z.string().max(100_000).optional(),
+  mediaUrl: z.string().url().nullable().optional(),
+});
+
+export const commentApiSchema = z.object({
+  postId: z.string().uuid(),
+  body: z.string().min(1).max(10_000),
+});
+
+export const articleCommentApiSchema = z.object({
+  articleId: z.string().uuid(),
+  body: z.string().min(1).max(10_000),
 });

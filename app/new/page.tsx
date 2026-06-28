@@ -77,29 +77,7 @@ function NewPostPageContent() {
 
     setLoading(true);
 
-    const supabase = createClient();
-
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
-      setError("You must be logged in to post.");
-      setLoading(false);
-      return;
-    }
-
-    const { data: city } = await supabase
-      .from("cities")
-      .select("id")
-      .eq("slug", citySlug)
-      .single();
-
-    if (!city) {
-      setError("City not found.");
-      setLoading(false);
-      return;
-    }
-
+    // Photo upload stays client-side (direct to Supabase Storage)
     let media_url: string | null = null;
 
     if (postType === "photo" && file) {
@@ -108,6 +86,10 @@ function NewPostPageContent() {
         setLoading(false);
         return;
       }
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { setError("You must be logged in to post."); setLoading(false); return; }
+
       const ext = file.name.split(".").pop();
       const path = `${user.id}/${Date.now()}.${ext}`;
       const { error: uploadError } = await supabase.storage
@@ -120,9 +102,7 @@ function NewPostPageContent() {
         return;
       }
 
-      const { data: urlData } = supabase.storage
-        .from("media")
-        .getPublicUrl(path);
+      const { data: urlData } = supabase.storage.from("media").getPublicUrl(path);
       media_url = urlData.publicUrl;
     } else if (postType === "video") {
       const trimmed = videoUrl.trim();
@@ -134,21 +114,22 @@ function NewPostPageContent() {
       media_url = trimmed;
     }
 
-    const { error: insertError } = await supabase.from("posts").insert({
-      city_id: city.id,
-      user_id: user.id,
-      title: title.trim(),
-      body: body.trim() || null,
-      post_type: postType,
-      media_url,
+    // DB insert via API route (rate-limited, server-side auth)
+    const res = await fetch("/api/posts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        citySlug,
+        title: title.trim(),
+        postType,
+        body: body.trim() || undefined,
+        mediaUrl: media_url,
+      }),
     });
 
-    if (insertError) {
-      setError(
-        insertError.message.includes("row-level security")
-          ? "You're posting too quickly — please wait a moment before posting again."
-          : insertError.message,
-      );
+    if (!res.ok) {
+      const data = await res.json();
+      setError(data.error ?? "Something went wrong.");
       setLoading(false);
       return;
     }
