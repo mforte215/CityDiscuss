@@ -56,14 +56,18 @@ export function CommentForm({
 
   return (
     <div className="mt-5 rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-white/[0.08] dark:bg-white/[0.03]">
+      <label htmlFor="comment-body" className="sr-only">Add a reply</label>
       <textarea
+        id="comment-body"
         placeholder="Add a reply..."
         value={body}
         onChange={(e) => setBody(e.target.value)}
         rows={3}
+        aria-describedby={error ? "comment-error" : undefined}
+        aria-invalid={!!error || undefined}
         className="w-full resize-none bg-transparent text-sm leading-relaxed text-gray-900 outline-none placeholder:text-gray-400 dark:text-white dark:placeholder:text-white/20"
       />
-      {error && <p className="mb-2 text-sm text-red-500 dark:text-red-400">{error}</p>}
+      {error && <p id="comment-error" role="alert" className="mb-2 text-sm text-red-500 dark:text-red-400">{error}</p>}
       <div className="flex justify-end">
         <button
           onClick={handleSubmit}

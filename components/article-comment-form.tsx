@@ -47,15 +47,19 @@ export function ArticleCommentForm({ articleId }: { articleId: string }) {
 
   return (
     <div className="mt-5 rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-white/[0.08] dark:bg-white/[0.03]">
+      <label htmlFor="article-comment-body" className="sr-only">Share your thoughts</label>
       <textarea
+        id="article-comment-body"
         placeholder="Share your thoughts…"
         value={body}
         onChange={(e) => setBody(e.target.value)}
         rows={3}
+        aria-describedby={error ? "article-comment-error" : undefined}
+        aria-invalid={!!error || undefined}
         className="w-full resize-none bg-transparent text-sm leading-relaxed text-gray-900 outline-none placeholder:text-gray-400 dark:text-white dark:placeholder:text-white/20"
       />
       {error && (
-        <p className="mb-2 text-sm text-red-500 dark:text-red-400">{error}</p>
+        <p id="article-comment-error" role="alert" className="mb-2 text-sm text-red-500 dark:text-red-400">{error}</p>
       )}
       <div className="flex justify-end">
         <button

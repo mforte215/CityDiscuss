@@ -116,10 +116,10 @@ export default async function ForumPage(props: {
   const currentPage = Math.min(page, totalPages);
   const paginated = sorted.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE);
 
-  const sortTabs: { label: string; value: Sort }[] = [
-    { label: "🔥 Hot", value: "hot" },
-    { label: "✨ New", value: "new" },
-    { label: "⬆ Top", value: "top" },
+  const sortTabs: { label: string; icon: string; value: Sort }[] = [
+    { label: "Hot", icon: "🔥", value: "hot" },
+    { label: "New", icon: "✨", value: "new" },
+    { label: "Top", icon: "⬆", value: "top" },
   ];
 
   const cityParam = cityFilter ? `&city=${cityFilter}` : "";
@@ -153,13 +153,14 @@ export default async function ForumPage(props: {
             <Link
               key={tab.value}
               href={`/forum?sort=${tab.value}${cityParam}`}
+              aria-current={sort === tab.value ? "page" : undefined}
               className={`rounded-lg px-3.5 py-1.5 text-xs font-semibold transition-colors ${
                 sort === tab.value
                   ? "bg-gray-100 text-gray-900 dark:bg-white/[0.08] dark:text-white"
                   : "text-gray-400 hover:text-gray-700 dark:text-white/30 dark:hover:text-white/60"
               }`}
             >
-              {tab.label}
+              <span aria-hidden="true">{tab.icon} </span>{tab.label}
             </Link>
           ))}
         </div>
@@ -213,8 +214,8 @@ export default async function ForumPage(props: {
                   />
                 </div>
               ) : post.post_type === "video" ? (
-                <div className="mt-0.5 flex h-14 w-14 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-gray-100 text-xl dark:border-white/[0.07] dark:bg-white/[0.04]">
-                  ▶
+                <div className="mt-0.5 flex h-14 w-14 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-gray-100 text-xl dark:border-white/[0.07] dark:bg-white/[0.04]" aria-label="Video post">
+                  <span aria-hidden="true">▶</span>
                 </div>
               ) : (
                 <div className="mt-0.5 shrink-0">
@@ -273,10 +274,11 @@ export default async function ForumPage(props: {
                       fill="none"
                       stroke="currentColor"
                       strokeWidth={2}
+                      aria-hidden="true"
                     >
                       <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                     </svg>
-                    {commentCount}
+                    <span className="sr-only">replies: </span>{commentCount}
                   </span>
                 </div>
               </div>
@@ -300,6 +302,7 @@ export default async function ForumPage(props: {
           {currentPage > 1 ? (
             <Link
               href={`/forum?sort=${sort}${cityFilter ? `&city=${cityFilter}` : ""}&page=${currentPage - 1}`}
+              aria-label={`Previous page, page ${currentPage - 1}`}
               className="rounded-xl border border-gray-200 px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 dark:border-white/10 dark:text-white/50 dark:hover:bg-white/5"
             >
               ← Previous
@@ -313,6 +316,7 @@ export default async function ForumPage(props: {
           {currentPage < totalPages ? (
             <Link
               href={`/forum?sort=${sort}${cityFilter ? `&city=${cityFilter}` : ""}&page=${currentPage + 1}`}
+              aria-label={`Next page, page ${currentPage + 1}`}
               className="rounded-xl border border-gray-200 px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 dark:border-white/10 dark:text-white/50 dark:hover:bg-white/5"
             >
               Next →

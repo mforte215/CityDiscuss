@@ -51,14 +51,16 @@ export default async function Home(props: {
         <div className="flex items-center gap-3">
           <Image
             src="/logo.png"
-            alt="CityDiscuss"
+            alt=""
+            aria-hidden="true"
             width={40}
             height={40}
             className="rounded-xl block dark:hidden"
           />
           <Image
             src="/logo-dark.png"
-            alt="CityDiscuss"
+            alt=""
+            aria-hidden="true"
             width={40}
             height={40}
             className="rounded-xl hidden dark:block"
@@ -182,7 +184,7 @@ export default async function Home(props: {
                 </div>
               ) : (
                 <div className="flex aspect-video w-full items-center justify-center bg-gradient-to-br from-blue-500/10 to-blue-600/5 dark:from-blue-500/[0.08] dark:to-blue-600/[0.03]">
-                  <span className="text-3xl opacity-30">📰</span>
+                  <span className="text-3xl opacity-30" aria-hidden="true">📰</span>
                 </div>
               )}
               <div className="relative flex flex-1 flex-col px-4 py-4">

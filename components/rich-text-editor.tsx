@@ -33,6 +33,8 @@ function Btn({
       }}
       disabled={disabled}
       title={title}
+      aria-label={title}
+      aria-pressed={active}
       className={`flex h-7 w-7 items-center justify-center rounded text-sm transition-colors ${
         active
           ? "bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400"
@@ -88,9 +90,10 @@ function LinkPopover({ editor }: { editor: Editor }) {
         </svg>
       </Btn>
       {open && (
-        <div className="absolute left-0 top-9 z-20 flex w-72 flex-col gap-2 rounded-xl border border-gray-200 bg-white p-3 shadow-lg dark:border-white/10 dark:bg-[#1a1a22]">
+        <div role="dialog" aria-label="Insert link" className="absolute left-0 top-9 z-20 flex w-72 flex-col gap-2 rounded-xl border border-gray-200 bg-white p-3 shadow-lg dark:border-white/10 dark:bg-[#1a1a22]">
           <input
             autoFocus
+            aria-label="Link URL"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && apply()}
@@ -175,7 +178,7 @@ function ImagePopover({ editor, userId }: { editor: Editor; userId?: string }) {
         </svg>
       </Btn>
       {open && (
-        <div className="absolute left-0 top-9 z-20 w-72 rounded-xl border border-gray-200 bg-white shadow-lg dark:border-white/10 dark:bg-[#1a1a22]">
+        <div role="dialog" aria-label="Insert image" className="absolute left-0 top-9 z-20 w-72 rounded-xl border border-gray-200 bg-white shadow-lg dark:border-white/10 dark:bg-[#1a1a22]">
           {/* Tabs — only show Upload tab when userId is available */}
           {canUpload && (
             <div className="flex border-b border-gray-100 dark:border-white/[0.06]">
@@ -223,6 +226,7 @@ function ImagePopover({ editor, userId }: { editor: Editor; userId?: string }) {
               <div className="flex flex-col gap-2">
                 <input
                   autoFocus
+                  aria-label="Image URL"
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && insertUrl()}
@@ -243,9 +247,10 @@ function ImagePopover({ editor, userId }: { editor: Editor; userId?: string }) {
           <button
             type="button"
             onClick={() => setOpen(false)}
+            aria-label="Close image dialog"
             className="absolute right-2 top-2 rounded p-0.5 text-gray-400 hover:text-gray-700 dark:text-white/25 dark:hover:text-white/50"
           >
-            <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2.5}>
+            <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} aria-hidden="true">
               <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" />
             </svg>
           </button>
@@ -401,7 +406,7 @@ export function RichTextEditor({
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.08] dark:bg-white/[0.02]">
       {ready && <Toolbar editor={editor} userId={userId} />}
-      <div className="tiptap-content">
+      <div className="tiptap-content" role="textbox" aria-multiline="true" aria-label="Post body">
         <EditorContent editor={editor} />
       </div>
       {/* Status bar */}

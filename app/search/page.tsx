@@ -60,7 +60,9 @@ export default async function SearchPage(props: {
       {/* Search form */}
       <form method="GET" action="/search" className="mb-8">
         <div className="flex gap-2">
+          <label htmlFor="search-input" className="sr-only">Search posts and articles</label>
           <input
+            id="search-input"
             name="q"
             defaultValue={query}
             placeholder="Search posts and articles…"

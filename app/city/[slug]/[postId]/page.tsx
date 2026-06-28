@@ -47,13 +47,14 @@ function youtubeEmbedUrl(url: string): string | null {
   return null;
 }
 
-function VideoEmbed({ url }: { url: string }) {
+function VideoEmbed({ url, title }: { url: string; title: string }) {
   const embedUrl = youtubeEmbedUrl(url);
   if (embedUrl) {
     return (
       <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-gray-200 dark:border-white/[0.07]">
         <iframe
           src={embedUrl}
+          title={title}
           className="h-full w-full"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
@@ -65,6 +66,7 @@ function VideoEmbed({ url }: { url: string }) {
     <video
       src={url}
       controls
+      aria-label={title}
       className="w-full rounded-xl border border-gray-200 dark:border-white/[0.07]"
     />
   );
@@ -204,7 +206,7 @@ export default async function PostPage({
 
         {post.post_type === "video" && post.media_url && (
           <div className="mb-4">
-            <VideoEmbed url={post.media_url} />
+            <VideoEmbed url={post.media_url} title={post.title} />
           </div>
         )}
 

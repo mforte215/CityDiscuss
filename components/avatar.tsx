@@ -13,7 +13,7 @@ export function Avatar({
     return (
       <img
         src={avatarUrl}
-        alt={username}
+        alt={`${username}'s avatar`}
         className="shrink-0 rounded-full object-cover"
         style={{ width: size, height: size }}
       />
@@ -23,10 +23,12 @@ export function Avatar({
   const bg = COLORS[username.charCodeAt(0) % COLORS.length];
   return (
     <div
+      role="img"
+      aria-label={`${username}'s avatar`}
       className="flex shrink-0 items-center justify-center rounded-full font-semibold text-white"
       style={{ width: size, height: size, background: bg, fontSize: size * 0.35 }}
     >
-      {username.slice(0, 2).toUpperCase()}
+      <span aria-hidden="true">{username.slice(0, 2).toUpperCase()}</span>
     </div>
   );
 }

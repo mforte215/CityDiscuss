@@ -41,13 +41,20 @@ export default function RootLayout({
         />
       </head>
       <body>
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-blue-600 focus:shadow-lg focus:outline-none dark:focus:bg-gray-900 dark:focus:text-blue-400"
+        >
+          Skip to main content
+        </a>
         <ThemeProvider>
           <nav className="sticky top-0 z-50 flex h-14 items-center justify-between gap-2 border-b border-black/[0.07] bg-white/85 px-3 backdrop-blur-xl sm:px-6 dark:border-white/[0.06] dark:bg-[rgba(10,10,14,0.85)]">
             <Link href="/" className="flex min-w-0 shrink items-center gap-2">
               {/* Light logo */}
               <Image
                 src="/logo.png"
-                alt="CityDiscuss"
+                alt=""
+                aria-hidden="true"
                 width={32}
                 height={32}
                 className="block shrink-0 rounded-md dark:hidden"
@@ -55,7 +62,8 @@ export default function RootLayout({
               {/* Dark logo */}
               <Image
                 src="/logo-dark.png"
-                alt="CityDiscuss"
+                alt=""
+                aria-hidden="true"
                 width={32}
                 height={32}
                 className="hidden shrink-0 rounded-md dark:block"
@@ -66,7 +74,7 @@ export default function RootLayout({
             </Link>
             <NavAuth />
           </nav>
-          <main className="min-h-[calc(100vh-3.5rem)]">{children}</main>
+          <main id="main-content" className="min-h-[calc(100vh-3.5rem)]">{children}</main>
 
           <footer className="border-t border-black/[0.06] bg-gray-50 dark:border-white/[0.05] dark:bg-white/[0.01]">
             <div className="mx-auto max-w-5xl px-6 py-10">
@@ -75,14 +83,16 @@ export default function RootLayout({
                 <div className="flex items-center gap-2.5">
                   <Image
                     src="/logo.png"
-                    alt="CityDiscuss"
+                    alt=""
+                    aria-hidden="true"
                     width={28}
                     height={28}
                     className="rounded-md block dark:hidden"
                   />
                   <Image
                     src="/logo-dark.png"
-                    alt="CityDiscuss"
+                    alt=""
+                    aria-hidden="true"
                     width={28}
                     height={28}
                     className="rounded-md hidden dark:block"

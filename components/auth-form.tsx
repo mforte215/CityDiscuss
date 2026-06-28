@@ -102,45 +102,55 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
       {/* Email form */}
       {isSignup && (
         <div>
-          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-white/35">
+          <label htmlFor="auth-username" className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-white/35">
             Username
           </label>
           <input
+            id="auth-username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             placeholder="Choose a username"
+            autoComplete="username"
             className="w-full rounded-xl border border-gray-200 bg-gray-100 px-4 py-3 text-sm text-gray-900 outline-none placeholder:text-gray-400 focus:border-blue-500/50 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-white dark:placeholder:text-white/20 dark:focus:border-blue-500/30"
           />
         </div>
       )}
 
       <div>
-        <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-white/35">
+        <label htmlFor="auth-email" className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-white/35">
           Email
         </label>
         <input
+          id="auth-email"
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@example.com"
+          autoComplete="email"
+          aria-describedby={error ? "auth-error" : undefined}
+          aria-invalid={!!error || undefined}
           className="w-full rounded-xl border border-gray-200 bg-gray-100 px-4 py-3 text-sm text-gray-900 outline-none placeholder:text-gray-400 focus:border-blue-500/50 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-white dark:placeholder:text-white/20 dark:focus:border-blue-500/30"
         />
       </div>
 
       <div>
-        <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-white/35">
+        <label htmlFor="auth-password" className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-white/35">
           Password
         </label>
         <input
+          id="auth-password"
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder={isSignup ? "At least 6 characters" : "Your password"}
+          autoComplete={isSignup ? "new-password" : "current-password"}
+          aria-describedby={error ? "auth-error" : undefined}
+          aria-invalid={!!error || undefined}
           className="w-full rounded-xl border border-gray-200 bg-gray-100 px-4 py-3 text-sm text-gray-900 outline-none placeholder:text-gray-400 focus:border-blue-500/50 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-white dark:placeholder:text-white/20 dark:focus:border-blue-500/30"
         />
       </div>
 
-      {error && <p className="text-sm text-red-500 dark:text-red-400">{error}</p>}
+      {error && <p id="auth-error" role="alert" className="text-sm text-red-500 dark:text-red-400">{error}</p>}
 
       <button
         onClick={handleSubmit}

@@ -154,17 +154,18 @@ function NewPostPageContent() {
         ← Back
       </button>
 
-      <h2 className="mb-6 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+      <h1 className="mb-6 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
         Start a discussion
-      </h2>
+      </h1>
 
       <div className="flex flex-col gap-4">
         {/* City selector */}
         <div>
-          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-white/35">
+          <label htmlFor="new-post-city" className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-white/35">
             City
           </label>
           <select
+            id="new-post-city"
             value={citySlug}
             onChange={(e) => setCitySlug(e.target.value)}
             className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 outline-none focus:border-blue-500/50 dark:border-white/[0.08] dark:bg-[#0f0f0f] dark:text-white dark:focus:border-blue-500/30"
@@ -187,13 +188,14 @@ function NewPostPageContent() {
                 setPostType(tab.value);
                 setError("");
               }}
+              aria-pressed={postType === tab.value}
               className={`flex flex-1 items-center justify-center gap-2 rounded-lg py-2 text-sm font-semibold transition-colors ${
                 postType === tab.value
                   ? "bg-white text-gray-900 shadow-sm dark:bg-white/[0.08] dark:text-white dark:shadow-none"
                   : "text-gray-400 hover:text-gray-600 dark:text-white/30 dark:hover:text-white/55"
               }`}
             >
-              <span>{tab.icon}</span>
+              <span aria-hidden="true">{tab.icon}</span>
               {tab.label}
             </button>
           ))}
@@ -201,10 +203,11 @@ function NewPostPageContent() {
 
         {/* Title */}
         <div>
-          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-white/35">
+          <label htmlFor="new-post-title" className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-white/35">
             Title
           </label>
           <input
+            id="new-post-title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="What's on your mind?"
@@ -259,10 +262,11 @@ function NewPostPageContent() {
         {/* Video URL */}
         {postType === "video" && (
           <div>
-            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-white/35">
+            <label htmlFor="new-post-video-url" className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-white/35">
               Video URL
             </label>
             <input
+              id="new-post-video-url"
               value={videoUrl}
               onChange={(e) => setVideoUrl(e.target.value)}
               placeholder="https://youtube.com/watch?v=..."
@@ -294,7 +298,7 @@ function NewPostPageContent() {
           />
         </div>
 
-        {error && <p className="text-sm text-red-500 dark:text-red-400">{error}</p>}
+        {error && <p role="alert" className="text-sm text-red-500 dark:text-red-400">{error}</p>}
 
         <div className="flex justify-end gap-2.5">
           <button
