@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { loginSchema, signupSchema } from "@/lib/schemas";
 
 export function AuthForm({ mode }: { mode: "login" | "signup" }) {
   const router = useRouter();
@@ -27,8 +28,16 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
 
   async function handleSubmit() {
     if (!filled) return;
-    setLoading(true);
     setError("");
+
+    const schema = isSignup ? signupSchema : loginSchema;
+    const result = schema.safeParse({ username, email, password });
+    if (!result.success) {
+      setError(result.error.issues[0].message);
+      return;
+    }
+
+    setLoading(true);
 
     const supabase = createClient();
 

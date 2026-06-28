@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { commentSchema } from "@/lib/schemas";
 
 export function CommentForm({
   postId,
@@ -18,8 +19,15 @@ export function CommentForm({
 
   async function handleSubmit() {
     if (!body.trim()) return;
-    setLoading(true);
     setError("");
+
+    const result = commentSchema.safeParse({ body: body.trim() });
+    if (!result.success) {
+      setError(result.error.issues[0].message);
+      return;
+    }
+
+    setLoading(true);
 
     const supabase = createClient();
 

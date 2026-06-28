@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { RichTextEditor } from "@/components/rich-text-editor";
+import { newPostSchema } from "@/lib/schemas";
 
 type PostType = "text" | "photo" | "video";
 type City = { name: string; slug: string; state: string };
@@ -62,8 +63,19 @@ function NewPostPageContent() {
 
   async function handleSubmit() {
     if (!filled) return;
-    setLoading(true);
     setError("");
+
+    const result = newPostSchema.safeParse({
+      citySlug,
+      title: title.trim(),
+      videoUrl: postType === "video" ? videoUrl.trim() : undefined,
+    });
+    if (!result.success) {
+      setError(result.error.issues[0].message);
+      return;
+    }
+
+    setLoading(true);
 
     const supabase = createClient();
 

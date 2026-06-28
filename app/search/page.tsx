@@ -35,13 +35,17 @@ export default async function SearchPage(props: {
         supabase
           .from("posts")
           .select("id, title, body, created_at, profiles(username), cities(name, slug)")
-          .ilike("title", `%${query}%`)
+          .or(
+            `title.wfts(english).${query},body.wfts(english).${query}`,
+          )
           .order("created_at", { ascending: false })
           .limit(20),
         supabase
           .from("articles")
           .select("title, subtitle, slug, published_at, cities(name, slug)")
-          .ilike("title", `%${query}%`)
+          .or(
+            `title.wfts(english).${query},subtitle.wfts(english).${query}`,
+          )
           .not("published_at", "is", null)
           .order("published_at", { ascending: false })
           .limit(10),
