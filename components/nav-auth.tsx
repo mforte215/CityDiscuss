@@ -5,12 +5,25 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { NotificationBell } from "@/components/notification-bell";
+import { SearchPalette } from "@/components/search-palette";
 
 export function NavAuth() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [username, setUsername] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  useEffect(() => {
+    function handler(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+    }
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, []);
 
   useEffect(() => {
     const supabase = createClient();
@@ -66,16 +79,19 @@ export function NavAuth() {
   );
 
   const searchLink = (
-    <Link
-      href="/search"
-      aria-label="Search"
-      className="hidden h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-700 sm:flex dark:text-white/35 dark:hover:bg-white/[0.06] dark:hover:text-white/70"
-    >
-      <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="11" cy="11" r="8" />
-        <path d="m21 21-4.35-4.35" />
-      </svg>
-    </Link>
+    <>
+      <SearchPalette open={searchOpen} onClose={() => setSearchOpen(false)} />
+      <button
+        onClick={() => setSearchOpen(true)}
+        aria-label="Search"
+        className="hidden h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-700 sm:flex dark:text-white/35 dark:hover:bg-white/[0.06] dark:hover:text-white/70"
+      >
+        <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.35-4.35" />
+        </svg>
+      </button>
+    </>
   );
 
   if (user) {
