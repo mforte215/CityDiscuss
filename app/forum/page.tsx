@@ -31,7 +31,7 @@ function hotScore(score: number, createdAt: string) {
   return score / Math.pow(ageHours + 2, 1.5);
 }
 
-type Sort = "hot" | "new" | "top";
+type Sort = "hot" | "new" | "top" | "following";
 
 const PER_PAGE = 25;
 
@@ -40,7 +40,7 @@ export default async function ForumPage(props: {
 }) {
   const { sort: rawSort, city: cityFilter, page: rawPage } = await props.searchParams;
   const sort: Sort =
-    rawSort === "top" ? "top" : rawSort === "new" ? "new" : "hot";
+    rawSort === "top" ? "top" : rawSort === "new" ? "new" : rawSort === "following" ? "following" : "hot";
   const page = Math.max(1, parseInt(rawPage ?? "1", 10) || 1);
 
   const supabase = await createClient();
@@ -73,10 +73,22 @@ export default async function ForumPage(props: {
       ) ?? 0,
   }));
 
-  // Filter by city if selected
-  const filtered = cityFilter
-    ? scored.filter((p: any) => p.cities?.slug === cityFilter)
-    : scored;
+  // Following feed — get IDs of users the current user follows
+  let followingIds: Set<string> = new Set();
+  if (sort === "following" && user) {
+    const { data: follows } = await (supabase as any)
+      .from("follows")
+      .select("following_id")
+      .eq("follower_id", user.id);
+    followingIds = new Set((follows ?? []).map((f: any) => f.following_id));
+  }
+
+  // Filter by city and/or following
+  const filtered = scored.filter((p: any) => {
+    if (cityFilter && p.cities?.slug !== cityFilter) return false;
+    if (sort === "following") return followingIds.has(p.user_id);
+    return true;
+  });
 
   // Sort
   const sorted = [...filtered];
@@ -121,6 +133,7 @@ export default async function ForumPage(props: {
     { label: "Hot", icon: "🔥", value: "hot" },
     { label: "New", icon: "✨", value: "new" },
     { label: "Top", icon: "⬆", value: "top" },
+    ...(user ? [{ label: "Following", icon: "👥", value: "following" as Sort }] : []),
   ];
 
   const cityParam = cityFilter ? `&city=${cityFilter}` : "";

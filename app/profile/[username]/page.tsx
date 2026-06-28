@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Avatar } from "@/components/avatar";
+import { FollowButton } from "@/components/follow-button";
 
 export async function generateMetadata(props: {
   params: Promise<{ username: string }>;
@@ -38,6 +39,8 @@ export default async function ProfilePage({
   const { username } = await params;
   const supabase = await createClient();
 
+  const { data: { user: currentUser } } = await supabase.auth.getUser();
+
   const { data: profile } = await supabase
     .from("profiles")
     .select("*")
@@ -46,11 +49,24 @@ export default async function ProfilePage({
 
   if (!profile) notFound();
 
-  const { data: posts } = await supabase
-    .from("posts")
-    .select("*, cities(name, slug), post_votes(value), comments(count)")
-    .eq("user_id", profile.id)
-    .order("created_at", { ascending: false });
+  const [{ data: posts }, { data: followers }, { data: following }, { data: isFollowingRow }] =
+    await Promise.all([
+      supabase
+        .from("posts")
+        .select("*, cities(name, slug), post_votes(value), comments(count)")
+        .eq("user_id", profile.id)
+        .order("created_at", { ascending: false }),
+      (supabase as any).from("follows").select("follower_id").eq("following_id", profile.id),
+      (supabase as any).from("follows").select("following_id").eq("follower_id", profile.id),
+      currentUser && currentUser.id !== profile.id
+        ? (supabase as any).from("follows").select("follower_id").eq("follower_id", currentUser.id).eq("following_id", profile.id).maybeSingle()
+        : Promise.resolve({ data: null }),
+    ]);
+
+  const followerCount = followers?.length ?? 0;
+  const followingCount = following?.length ?? 0;
+  const isFollowing = !!isFollowingRow;
+  const isOwnProfile = currentUser?.id === profile.id;
 
   const joinDate = new Date(profile.created_at).toLocaleDateString("en-US", {
     month: "long",
@@ -69,16 +85,21 @@ export default async function ProfilePage({
   return (
     <div className="mx-auto max-w-2xl px-6 py-10">
       {/* Header */}
-      <div className="mb-8 flex items-center gap-4">
-        <Avatar username={profile.username} avatarUrl={profile.avatar_url} size={56} />
-        <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-gray-900 dark:text-white">
-            {profile.username}
-          </h1>
-          <p className="mt-0.5 text-sm text-gray-400 dark:text-white/30">
-            Joined {joinDate}
-          </p>
+      <div className="mb-8 flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <Avatar username={profile.username} avatarUrl={profile.avatar_url} size={56} />
+          <div>
+            <h1 className="text-2xl font-extrabold tracking-tight text-gray-900 dark:text-white">
+              {profile.username}
+            </h1>
+            <p className="mt-0.5 text-sm text-gray-400 dark:text-white/30">
+              Joined {joinDate}
+            </p>
+          </div>
         </div>
+        {!isOwnProfile && currentUser && (
+          <FollowButton profileId={profile.id} initialIsFollowing={isFollowing} />
+        )}
       </div>
 
       {/* Stats row */}
@@ -94,9 +115,21 @@ export default async function ProfilePage({
           <div className="text-lg font-bold text-gray-900 dark:text-white">
             {totalScore}
           </div>
-          <div className="text-xs text-gray-400 dark:text-white/30">
-            Total votes
+          <div className="text-xs text-gray-400 dark:text-white/30">Votes</div>
+        </div>
+        <div className="w-px bg-gray-200 dark:bg-white/[0.06]" />
+        <div>
+          <div className="text-lg font-bold text-gray-900 dark:text-white">
+            {followerCount}
           </div>
+          <div className="text-xs text-gray-400 dark:text-white/30">Followers</div>
+        </div>
+        <div className="w-px bg-gray-200 dark:bg-white/[0.06]" />
+        <div>
+          <div className="text-lg font-bold text-gray-900 dark:text-white">
+            {followingCount}
+          </div>
+          <div className="text-xs text-gray-400 dark:text-white/30">Following</div>
         </div>
       </div>
 

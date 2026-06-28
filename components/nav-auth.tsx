@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { NotificationBell } from "@/components/notification-bell";
 
 export function NavAuth() {
   const router = useRouter();
@@ -88,6 +89,7 @@ export function NavAuth() {
       <div className="flex items-center gap-1">
         {forumLink}
         {searchLink}
+        <NotificationBell userId={user.id} />
         <Link
           href={`/profile/${displayName}`}
           className="rounded-lg px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-white/70 dark:hover:bg-white/[0.06]"
