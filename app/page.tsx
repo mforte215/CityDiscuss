@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
+import { AdUnit } from "@/components/ad-unit";
 
 function timeAgo(date: string) {
   const seconds = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
@@ -218,6 +219,9 @@ export default async function Home(props: {
           ))}
         </div>
       )}
+
+      {/* Ad unit between articles and city links */}
+      <AdUnit slot="6023073744" format="horizontal" className="my-10" />
 
       {/* City links footer */}
       <div className="mt-12 border-t border-gray-100 pt-8 dark:border-white/[0.05]">

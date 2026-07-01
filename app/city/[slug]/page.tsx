@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { VoteButton } from "@/components/vote-button";
+import { AdUnit } from "@/components/ad-unit";
 import { Avatar } from "@/components/avatar";
 import Image from "next/image";
 
@@ -374,6 +375,9 @@ export default async function CityPage(props: {
             {scored.length} {scored.length === 1 ? "post" : "posts"}
           </span>
         </div>
+
+        {/* Ad unit above post list */}
+        <AdUnit slot="6023073744" format="horizontal" className="mb-6" />
 
         {/* Post list */}
         <div className="flex flex-col gap-0.5">

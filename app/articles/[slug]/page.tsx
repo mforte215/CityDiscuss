@@ -8,6 +8,7 @@ import { ArticleCommentForm } from "@/components/article-comment-form";
 import { DeleteArticleCommentButton } from "@/components/delete-article-comment-button";
 import { ShareButton } from "@/components/share-button";
 import { sanitizeContent } from "@/lib/sanitize";
+import { AdUnit } from "@/components/ad-unit";
 import Image from "next/image";
 
 // Cached so generateMetadata and the page share one DB round-trip
@@ -279,6 +280,9 @@ export default async function ArticlePage({
           </div>
         </div>
       )}
+
+      {/* Ad unit between article body and comments */}
+      <AdUnit slot="6023073744" format="horizontal" className="my-10" />
 
       {/* Comments */}
       <div className="mt-14 border-t border-gray-100 pt-10 dark:border-white/[0.06]">
