@@ -30,10 +30,7 @@ export async function updateSession(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const authRequired =
-    pathname.startsWith("/admin") ||
-    pathname === "/new" ||
-    pathname === "/settings" ||
-    /^\/city\/[^/]+\/[^/]+\/edit/.test(pathname);
+    pathname.startsWith("/admin") || pathname === "/settings";
 
   if (authRequired && !user) {
     const loginUrl = request.nextUrl.clone();

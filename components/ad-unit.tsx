@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import Script from "next/script";
 
 interface AdUnitProps {
   slot: string;
@@ -17,6 +18,16 @@ export function AdUnit({ slot, format = "auto", className }: AdUnitProps) {
 
   return (
     <div className={className}>
+      {/* Loaded here rather than in the root layout so the AdSense script is
+          absent from pages that serve no ads (auth, settings, admin, search).
+          next/script dedupes by id when a page renders several units. */}
+      <Script
+        id="adsbygoogle-js"
+        async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3091085842217794"
+        crossOrigin="anonymous"
+        strategy="afterInteractive"
+      />
       <ins
         className="adsbygoogle"
         style={{ display: "block" }}

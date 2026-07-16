@@ -39,28 +39,27 @@ export default async function AdminDashboard() {
   const [
     { count: totalUsers },
     { count: newUsers },
-    { count: totalPosts },
-    { count: newPosts },
     { count: totalArticles },
+    { count: draftArticles },
     { count: totalComments },
-    { count: totalArticleComments },
-    { data: recentPosts },
+    { count: newComments },
+    { data: recentArticles },
     { data: recentSignups },
-    { data: topPostsRaw },
-    { data: allCityPosts },
-    { data: activityDates },
+    { data: articlesByCityRaw },
+    { data: mostCommentedRaw },
+    { data: commentDates },
   ] = await Promise.all([
     supabase.from("profiles").select("*", { count: "exact", head: true }),
     supabase.from("profiles").select("*", { count: "exact", head: true }).gte("created_at", oneWeekAgo),
-    supabase.from("posts").select("*", { count: "exact", head: true }),
-    supabase.from("posts").select("*", { count: "exact", head: true }).gte("created_at", oneWeekAgo),
     supabase.from("articles").select("*", { count: "exact", head: true }).not("published_at", "is", null),
-    supabase.from("comments").select("*", { count: "exact", head: true }),
+    supabase.from("articles").select("*", { count: "exact", head: true }).is("published_at", null),
     supabase.from("article_comments").select("*", { count: "exact", head: true }),
+    supabase.from("article_comments").select("*", { count: "exact", head: true }).gte("created_at", oneWeekAgo),
     supabase
-      .from("posts")
-      .select("id, title, created_at, post_type, profiles(username), cities(name, slug)")
-      .order("created_at", { ascending: false })
+      .from("articles")
+      .select("slug, title, published_at, profiles(username), cities(name, slug)")
+      .not("published_at", "is", null)
+      .order("published_at", { ascending: false })
       .limit(8),
     supabase
       .from("profiles")
@@ -68,37 +67,35 @@ export default async function AdminDashboard() {
       .order("created_at", { ascending: false })
       .limit(8),
     supabase
-      .from("posts")
-      .select("id, title, post_votes(value), profiles(username), cities(name, slug)")
-      .order("created_at", { ascending: false })
+      .from("articles")
+      .select("city_id, cities(name, slug)")
+      .not("published_at", "is", null),
+    supabase
+      .from("articles")
+      .select("slug, title, cities(name), article_comments(count)")
+      .not("published_at", "is", null)
       .limit(200),
-    supabase
-      .from("posts")
-      .select("city_id, cities(name, slug)"),
-    supabase
-      .from("posts")
+    (supabase as any)
+      .from("article_comments")
       .select("created_at")
       .gte("created_at", thirtyDaysAgo)
       .order("created_at", { ascending: true }),
   ]);
 
-  // ── Top posts by vote score ──────────────────────────────────────
-  const topPosts = (topPostsRaw ?? [])
-    .map((p: any) => ({
-      ...p,
-      score: (p.post_votes as { value: number }[])?.reduce((s, v) => s + v.value, 0) ?? 0,
-    }))
-    .sort((a: any, b: any) => b.score - a.score)
+  // ── Most-commented articles ──────────────────────────────────────
+  const mostCommented = (mostCommentedRaw ?? [])
+    .map((a: any) => ({ ...a, count: a.article_comments?.[0]?.count ?? 0 }))
+    .filter((a: any) => a.count > 0)
+    .sort((a: any, b: any) => b.count - a.count)
     .slice(0, 5);
 
   // ── City breakdown ───────────────────────────────────────────────
   const cityMap = new Map<string, { name: string; slug: string; count: number }>();
-  for (const post of allCityPosts ?? []) {
-    const city = (post as any).cities;
+  for (const article of articlesByCityRaw ?? []) {
+    const city = (article as any).cities;
     if (!city) continue;
-    const key = city.slug;
-    if (!cityMap.has(key)) cityMap.set(key, { name: city.name, slug: city.slug, count: 0 });
-    cityMap.get(key)!.count++;
+    if (!cityMap.has(city.slug)) cityMap.set(city.slug, { name: city.name, slug: city.slug, count: 0 });
+    cityMap.get(city.slug)!.count++;
   }
   const cityBreakdown = Array.from(cityMap.values())
     .sort((a, b) => b.count - a.count)
@@ -111,21 +108,20 @@ export default async function AdminDashboard() {
     const d = new Date(Date.now() - i * 24 * 60 * 60 * 1000);
     dayMap.set(d.toISOString().slice(0, 10), 0);
   }
-  for (const row of activityDates ?? []) {
+  for (const row of (commentDates ?? []) as { created_at: string | null }[]) {
+    if (!row.created_at) continue;
     const day = row.created_at.slice(0, 10);
     if (dayMap.has(day)) dayMap.set(day, dayMap.get(day)! + 1);
   }
   const activityData = Array.from(dayMap.entries());
   const maxActivity = Math.max(1, ...activityData.map(([, v]) => v));
 
-  const totalCommentsCombined = (totalComments ?? 0) + (totalArticleComments ?? 0);
-
   // ── Stat card helper ─────────────────────────────────────────────
   const stats = [
     { label: "Total users", value: totalUsers ?? 0, sub: `+${newUsers ?? 0} this week`, icon: "👥", color: "blue" },
-    { label: "Forum posts", value: totalPosts ?? 0, sub: `+${newPosts ?? 0} this week`, icon: "💬", color: "violet" },
     { label: "Articles", value: totalArticles ?? 0, sub: "published", icon: "📰", color: "emerald" },
-    { label: "Comments", value: totalCommentsCombined, sub: "across all content", icon: "🗨", color: "amber" },
+    { label: "Comments", value: totalComments ?? 0, sub: `+${newComments ?? 0} this week`, icon: "🗨", color: "amber" },
+    { label: "Drafts", value: draftArticles ?? 0, sub: "unpublished", icon: "✏️", color: "violet" },
   ];
 
   const colorMap: Record<string, string> = {
@@ -204,13 +200,13 @@ export default async function AdminDashboard() {
       {/* ── 30-day activity chart ── */}
       <div className="mb-8 rounded-2xl border border-gray-200 bg-gray-50 px-6 py-5 dark:border-white/[0.07] dark:bg-white/[0.02]">
         <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-white/30">
-          Posts — last 30 days
+          Comments — last 30 days
         </p>
         <div className="flex h-24 items-end gap-px">
           {activityData.map(([day, count]) => (
             <div
               key={day}
-              title={`${formatDate(day)}: ${count} post${count !== 1 ? "s" : ""}`}
+              title={`${formatDate(day)}: ${count} comment${count !== 1 ? "s" : ""}`}
               className="group relative flex-1 cursor-default"
             >
               <div
@@ -230,42 +226,50 @@ export default async function AdminDashboard() {
         </div>
       </div>
 
-      {/* ── Recent posts + signups ── */}
+      {/* ── Recent articles + signups ── */}
       <div className="mb-8 grid gap-6 lg:grid-cols-3">
 
-        {/* Recent posts */}
+        {/* Recent articles */}
         <div className="lg:col-span-2 rounded-2xl border border-gray-200 bg-gray-50 dark:border-white/[0.07] dark:bg-white/[0.02]">
           <div className="flex items-center justify-between px-5 py-4">
             <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-white/30">
-              Recent posts
+              Recent articles
             </p>
-            <Link href="/forum" className="text-xs text-blue-500 hover:underline">
+            <Link href="/admin/articles" className="text-xs text-blue-500 hover:underline">
               View all
             </Link>
           </div>
           <div className="flex flex-col divide-y divide-gray-100 dark:divide-white/[0.05]">
-            {(recentPosts ?? []).map((post: any) => (
+            {(recentArticles ?? []).map((article: any) => (
               <Link
-                key={post.id}
-                href={`/city/${post.cities?.slug}/${post.id}`}
+                key={article.slug}
+                href={`/articles/${article.slug}`}
                 className="flex items-center justify-between gap-3 px-5 py-3 hover:bg-gray-100 dark:hover:bg-white/[0.03]"
               >
                 <div className="min-w-0">
                   <p className="truncate text-sm font-medium text-gray-900 dark:text-white">
-                    {post.title}
+                    {article.title}
                   </p>
                   <p className="text-xs text-gray-400 dark:text-white/25">
-                    <span className="font-medium text-blue-500 dark:text-blue-400">
-                      {post.cities?.name}
-                    </span>
-                    {" · "}@{post.profiles?.username}
+                    {article.cities?.name && (
+                      <span className="font-medium text-blue-500 dark:text-blue-400">
+                        {article.cities.name}
+                        {" · "}
+                      </span>
+                    )}
+                    @{article.profiles?.username ?? "staff"}
                   </p>
                 </div>
                 <span className="shrink-0 text-xs text-gray-400 dark:text-white/25">
-                  {timeAgo(post.created_at)}
+                  {timeAgo(article.published_at)}
                 </span>
               </Link>
             ))}
+            {(recentArticles ?? []).length === 0 && (
+              <p className="px-5 py-3 text-sm text-gray-400 dark:text-white/25">
+                No articles published yet.
+              </p>
+            )}
           </div>
         </div>
 
@@ -295,23 +299,20 @@ export default async function AdminDashboard() {
         </div>
       </div>
 
-      {/* ── City breakdown + Top posts ── */}
+      {/* ── City breakdown + most-commented ── */}
       <div className="grid gap-6 lg:grid-cols-2">
 
         {/* City breakdown */}
         <div className="rounded-2xl border border-gray-200 bg-gray-50 px-6 py-5 dark:border-white/[0.07] dark:bg-white/[0.02]">
           <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-white/30">
-            Posts by city
+            Articles by city
           </p>
           <div className="flex flex-col gap-2.5">
             {cityBreakdown.map((city) => (
               <div key={city.slug} className="flex items-center gap-3">
-                <Link
-                  href={`/city/${city.slug}`}
-                  className="w-28 shrink-0 truncate text-right text-xs font-medium text-gray-600 hover:text-blue-500 dark:text-white/50 dark:hover:text-blue-400"
-                >
+                <span className="w-28 shrink-0 truncate text-right text-xs font-medium text-gray-600 dark:text-white/50">
                   {city.name}
-                </Link>
+                </span>
                 <div className="h-2 flex-1 overflow-hidden rounded-full bg-gray-200 dark:bg-white/[0.07]">
                   <div
                     className="h-full rounded-full bg-blue-400 dark:bg-blue-500/70"
@@ -324,23 +325,23 @@ export default async function AdminDashboard() {
               </div>
             ))}
             {cityBreakdown.length === 0 && (
-              <p className="text-sm text-gray-400 dark:text-white/25">No posts yet.</p>
+              <p className="text-sm text-gray-400 dark:text-white/25">No articles yet.</p>
             )}
           </div>
         </div>
 
-        {/* Top posts by votes */}
+        {/* Most-commented articles */}
         <div className="rounded-2xl border border-gray-200 bg-gray-50 dark:border-white/[0.07] dark:bg-white/[0.02]">
           <div className="px-5 py-4">
             <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-white/30">
-              Top posts by votes
+              Most-commented articles
             </p>
           </div>
           <div className="flex flex-col divide-y divide-gray-100 dark:divide-white/[0.05]">
-            {topPosts.map((post: any, i: number) => (
+            {mostCommented.map((article: any, i: number) => (
               <Link
-                key={post.id}
-                href={`/city/${(post.cities as any)?.slug}/${post.id}`}
+                key={article.slug}
+                href={`/articles/${article.slug}`}
                 className="flex items-center gap-3 px-5 py-3 hover:bg-gray-100 dark:hover:bg-white/[0.03]"
               >
                 <span className="w-5 shrink-0 text-center text-xs font-bold text-gray-400 dark:text-white/20">
@@ -348,20 +349,22 @@ export default async function AdminDashboard() {
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium text-gray-900 dark:text-white">
-                    {post.title}
+                    {article.title}
                   </p>
-                  <p className="text-xs text-gray-400 dark:text-white/25">
-                    {(post.cities as any)?.name} · @{(post.profiles as any)?.username}
-                  </p>
+                  {article.cities?.name && (
+                    <p className="text-xs text-gray-400 dark:text-white/25">
+                      {article.cities.name}
+                    </p>
+                  )}
                 </div>
-                <div className="flex shrink-0 items-center gap-1 text-xs font-semibold text-orange-500">
-                  <span>⬆</span>
-                  <span>{post.score}</span>
+                <div className="flex shrink-0 items-center gap-1 text-xs font-semibold text-blue-500">
+                  <span>🗨</span>
+                  <span>{article.count}</span>
                 </div>
               </Link>
             ))}
-            {topPosts.length === 0 && (
-              <p className="px-5 py-3 text-sm text-gray-400 dark:text-white/25">No votes yet.</p>
+            {mostCommented.length === 0 && (
+              <p className="px-5 py-3 text-sm text-gray-400 dark:text-white/25">No comments yet.</p>
             )}
           </div>
         </div>

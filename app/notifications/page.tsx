@@ -19,15 +19,14 @@ function timeAgo(date: string) {
 
 function notificationText(n: any) {
   const actor = n.actor?.username ? `@${n.actor.username}` : "Someone";
-  if (n.type === "comment") return `${actor} replied to your post`;
-  if (n.type === "upvote") return `${actor} upvoted your post`;
+  if (n.type === "comment") return `${actor} commented on your article`;
   if (n.type === "follow") return `${actor} started following you`;
   return "";
 }
 
 function notificationHref(n: any) {
   if (n.type === "follow") return n.actor?.username ? `/profile/${n.actor.username}` : "/notifications";
-  if (n.post?.cities?.slug) return `/city/${n.post.cities.slug}/${n.post_id}`;
+  if (n.article?.slug) return `/articles/${n.article.slug}`;
   return "/notifications";
 }
 
@@ -36,10 +35,13 @@ export default async function NotificationsPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/auth/login");
 
+  // Legacy forum notifications (upvotes, post replies) are excluded — they
+  // point at routes that no longer exist.
   const { data: notifications } = await (supabase as any)
     .from("notifications")
-    .select("*, actor:profiles!actor_id(username, avatar_url), post:posts(title, cities(slug))")
+    .select("*, actor:profiles!actor_id(username, avatar_url), article:articles(title, slug)")
     .eq("user_id", user.id)
+    .or("type.eq.follow,article_id.not.is.null")
     .order("created_at", { ascending: false })
     .limit(50);
 
@@ -75,9 +77,9 @@ export default async function NotificationsPage() {
                 <p className="text-sm text-gray-800 dark:text-white/80">
                   {notificationText(n)}
                 </p>
-                {n.post && (
+                {n.article && (
                   <p className="mt-1 line-clamp-1 text-xs text-gray-500 dark:text-white/40">
-                    {n.post.title}
+                    {n.article.title}
                   </p>
                 )}
                 <p className="mt-1 text-xs text-gray-400 dark:text-white/25">

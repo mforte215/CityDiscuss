@@ -39,11 +39,6 @@ export default function RootLayout({
             __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.classList.add('dark');}catch(e){}})();`,
           }}
         />
-        <script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3091085842217794"
-          crossOrigin="anonymous"
-        />
       </head>
       <body>
         <a
@@ -115,9 +110,6 @@ export default function RootLayout({
                     </p>
                     <Link href="/" className="text-gray-500 hover:text-gray-900 dark:text-white/40 dark:hover:text-white/70">
                       Articles
-                    </Link>
-                    <Link href="/forum" className="text-gray-500 hover:text-gray-900 dark:text-white/40 dark:hover:text-white/70">
-                      Forum
                     </Link>
                   </div>
                   <div className="flex flex-col gap-2">

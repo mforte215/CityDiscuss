@@ -4,12 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   title: "Search — CityDiscuss",
-  description: "Search posts and articles across CityDiscuss.",
+  description: "Search articles across CityDiscuss.",
 };
-
-function stripHtml(html: string) {
-  return html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
-}
 
 function timeAgo(date: string) {
   const seconds = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
@@ -30,30 +26,17 @@ export default async function SearchPage(props: {
 
   const supabase = await createClient();
 
-  const [{ data: posts }, { data: articles }] = query
-    ? await Promise.all([
-        supabase
-          .from("posts")
-          .select("id, title, body, created_at, profiles(username), cities(name, slug)")
-          .or(
-            `title.wfts(english).${query},body.wfts(english).${query}`,
-          )
-          .order("created_at", { ascending: false })
-          .limit(20),
-        supabase
-          .from("articles")
-          .select("title, subtitle, slug, published_at, cities(name, slug)")
-          .or(
-            `title.wfts(english).${query},subtitle.wfts(english).${query}`,
-          )
-          .not("published_at", "is", null)
-          .order("published_at", { ascending: false })
-          .limit(10),
-      ])
-    : [{ data: null }, { data: null }];
+  const { data: articles } = query
+    ? await supabase
+        .from("articles")
+        .select("title, subtitle, slug, published_at, cities(name, slug)")
+        .or(`title.wfts(english).${query},subtitle.wfts(english).${query}`)
+        .not("published_at", "is", null)
+        .order("published_at", { ascending: false })
+        .limit(20)
+    : { data: null };
 
-  const hasResults =
-    (posts && posts.length > 0) || (articles && articles.length > 0);
+  const hasResults = articles && articles.length > 0;
 
   return (
     <div className="mx-auto max-w-2xl px-6 py-12">
@@ -64,12 +47,12 @@ export default async function SearchPage(props: {
       {/* Search form */}
       <form method="GET" action="/search" className="mb-8">
         <div className="flex gap-2">
-          <label htmlFor="search-input" className="sr-only">Search posts and articles</label>
+          <label htmlFor="search-input" className="sr-only">Search articles</label>
           <input
             id="search-input"
             name="q"
             defaultValue={query}
-            placeholder="Search posts and articles…"
+            placeholder="Search articles…"
             autoFocus
             className="flex-1 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 outline-none placeholder:text-gray-400 focus:border-blue-500/50 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-white dark:placeholder:text-white/25 dark:focus:border-blue-500/30"
           />
@@ -85,7 +68,7 @@ export default async function SearchPage(props: {
       {/* No query yet */}
       {!query && (
         <p className="text-sm text-gray-400 dark:text-white/30">
-          Enter a term above to search across all posts and articles.
+          Enter a term above to search across all articles.
         </p>
       )}
 
@@ -98,77 +81,31 @@ export default async function SearchPage(props: {
 
       {/* Articles */}
       {articles && articles.length > 0 && (
-        <div className="mb-8">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-white/25">
-            Articles
-          </p>
-          <div className="flex flex-col gap-1.5">
-            {articles.map((article: any) => (
-              <Link
-                key={article.slug}
-                href={`/articles/${article.slug}`}
-                className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3.5 transition-all hover:border-blue-300 hover:bg-blue-50 dark:border-white/[0.06] dark:bg-white/[0.02] dark:hover:border-blue-500/25 dark:hover:bg-blue-500/[0.04]"
-              >
-                <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                  {article.title}
+        <div className="flex flex-col gap-1.5">
+          {articles.map((article: any) => (
+            <Link
+              key={article.slug}
+              href={`/articles/${article.slug}`}
+              className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3.5 transition-all hover:border-blue-300 hover:bg-blue-50 dark:border-white/[0.06] dark:bg-white/[0.02] dark:hover:border-blue-500/25 dark:hover:bg-blue-500/[0.04]"
+            >
+              <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                {article.title}
+              </p>
+              {article.subtitle && (
+                <p className="mt-0.5 line-clamp-1 text-xs text-gray-500 dark:text-white/40">
+                  {article.subtitle}
                 </p>
-                {article.subtitle && (
-                  <p className="mt-0.5 line-clamp-1 text-xs text-gray-500 dark:text-white/40">
-                    {article.subtitle}
-                  </p>
+              )}
+              <p className="mt-1 text-xs text-gray-400 dark:text-white/25">
+                {article.cities?.name && (
+                  <span className="mr-2 font-medium text-blue-500 dark:text-blue-400">
+                    {article.cities.name}
+                  </span>
                 )}
-                <p className="mt-1 text-xs text-gray-400 dark:text-white/25">
-                  {article.cities?.name && (
-                    <span className="mr-2 font-medium text-blue-500 dark:text-blue-400">
-                      {article.cities.name}
-                    </span>
-                  )}
-                  {timeAgo(article.published_at)}
-                </p>
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Posts */}
-      {posts && posts.length > 0 && (
-        <div>
-          <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-white/25">
-            Forum posts
-          </p>
-          <div className="flex flex-col divide-y divide-gray-100 dark:divide-white/[0.04]">
-            {posts.map((post: any) => {
-              const username = post.profiles?.username ?? "anonymous";
-              const city = post.cities;
-              return (
-                <div key={post.id} className="relative py-3 first:pt-0">
-                  <Link
-                    href={`/city/${city?.slug}/${post.id}`}
-                    className="absolute inset-0"
-                    aria-label={post.title}
-                  />
-                  <p className="text-[15px] font-semibold text-gray-900 dark:text-white">
-                    {post.title}
-                  </p>
-                  {post.body && (
-                    <p className="mt-0.5 line-clamp-1 text-sm text-gray-500 dark:text-white/40">
-                      {stripHtml(post.body)}
-                    </p>
-                  )}
-                  <div className="mt-1 flex gap-3 text-xs text-gray-400 dark:text-white/25">
-                    {city && (
-                      <span className="font-semibold text-blue-500 dark:text-blue-400">
-                        {city.name}
-                      </span>
-                    )}
-                    <span>@{username}</span>
-                    <span>{timeAgo(post.created_at)}</span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+                {timeAgo(article.published_at)}
+              </p>
+            </Link>
+          ))}
         </div>
       )}
     </div>

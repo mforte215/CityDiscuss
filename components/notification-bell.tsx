@@ -6,11 +6,11 @@ import { createClient } from "@/lib/supabase/client";
 
 type Notification = {
   id: string;
-  type: "comment" | "upvote" | "follow";
+  type: "comment" | "follow";
   read: boolean;
   created_at: string;
   actor: { username: string } | null;
-  post: { title: string; cities: { slug: string } | null } | null;
+  article: { title: string; slug: string } | null;
 };
 
 function timeAgo(date: string) {
@@ -25,15 +25,14 @@ function timeAgo(date: string) {
 
 function notificationText(n: Notification) {
   const actor = n.actor?.username ? `@${n.actor.username}` : "Someone";
-  if (n.type === "comment") return `${actor} replied to your post`;
-  if (n.type === "upvote") return `${actor} upvoted your post`;
+  if (n.type === "comment") return `${actor} commented on your article`;
   if (n.type === "follow") return `${actor} started following you`;
   return "";
 }
 
 function notificationHref(n: Notification) {
   if (n.type === "follow") return `/${n.actor?.username ? `profile/${n.actor.username}` : "notifications"}`;
-  if (n.post?.cities?.slug && n.post) return `/city/${n.post.cities.slug}/${(n as any).post_id}`;
+  if (n.article?.slug) return `/articles/${n.article.slug}`;
   return "/notifications";
 }
 
@@ -47,10 +46,12 @@ export function NotificationBell({ userId }: { userId: string }) {
     const supabase = createClient();
 
     async function load() {
+      // Legacy forum notifications are excluded — their routes are gone.
       const { data } = await (supabase as any)
         .from("notifications")
-        .select("*, actor:profiles!actor_id(username), post:posts(title, cities(slug))")
+        .select("*, actor:profiles!actor_id(username), article:articles(title, slug)")
         .eq("user_id", userId)
+        .or("type.eq.follow,article_id.not.is.null")
         .order("created_at", { ascending: false })
         .limit(20);
 
@@ -72,7 +73,7 @@ export function NotificationBell({ userId }: { userId: string }) {
       }, async (payload) => {
         const { data } = await (supabase as any)
           .from("notifications")
-          .select("*, actor:profiles!actor_id(username), post:posts(title, cities(slug))")
+          .select("*, actor:profiles!actor_id(username), article:articles(title, slug)")
           .eq("id", payload.new.id)
           .single();
         if (data) {
@@ -158,9 +159,9 @@ export function NotificationBell({ userId }: { userId: string }) {
                     <p className="text-sm text-gray-700 dark:text-white/70">
                       {notificationText(n)}
                     </p>
-                    {n.post && (
+                    {n.article && (
                       <p className="mt-0.5 line-clamp-1 text-xs text-gray-400 dark:text-white/30">
-                        {n.post.title}
+                        {n.article.title}
                       </p>
                     )}
                     <p className="mt-0.5 text-xs text-gray-300 dark:text-white/20">

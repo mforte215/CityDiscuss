@@ -11,23 +11,10 @@ type Article = {
   cities: { name: string } | null;
 };
 
-type Post = {
-  id: string;
-  title: string;
-  body: string | null;
-  cities: { name: string; slug: string } | null;
-  profiles: { username: string } | null;
-};
-
-function stripHtml(html: string) {
-  return html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
-}
-
 export function SearchPalette({ open, onClose }: { open: boolean; onClose: () => void }) {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [articles, setArticles] = useState<Article[]>([]);
-  const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -48,7 +35,6 @@ export function SearchPalette({ open, onClose }: { open: boolean; onClose: () =>
       setTimeout(() => inputRef.current?.focus(), 50);
       setQuery("");
       setArticles([]);
-      setPosts([]);
       setSelected(0);
     }
   }, [open]);
@@ -56,7 +42,6 @@ export function SearchPalette({ open, onClose }: { open: boolean; onClose: () =>
   const search = useCallback(async (q: string) => {
     if (!q.trim()) {
       setArticles([]);
-      setPosts([]);
       return;
     }
 
@@ -64,35 +49,21 @@ export function SearchPalette({ open, onClose }: { open: boolean; onClose: () =>
     const supabase = createClient();
     const useFts = q.trim().length >= 3;
 
-    const [{ data: a }, { data: p }] = await Promise.all([
-      useFts
-        ? supabase
-            .from("articles")
-            .select("slug, title, subtitle, cities(name)")
-            .or(`title.wfts(english).${q},subtitle.wfts(english).${q}`)
-            .not("published_at", "is", null)
-            .limit(4)
-        : supabase
-            .from("articles")
-            .select("slug, title, subtitle, cities(name)")
-            .ilike("title", `%${q}%`)
-            .not("published_at", "is", null)
-            .limit(4),
-      useFts
-        ? supabase
-            .from("posts")
-            .select("id, title, body, cities(name, slug), profiles(username)")
-            .or(`title.wfts(english).${q},body.wfts(english).${q}`)
-            .limit(6)
-        : supabase
-            .from("posts")
-            .select("id, title, body, cities(name, slug), profiles(username)")
-            .ilike("title", `%${q}%`)
-            .limit(6),
-    ]);
+    const { data: a } = useFts
+      ? await supabase
+          .from("articles")
+          .select("slug, title, subtitle, cities(name)")
+          .or(`title.wfts(english).${q},subtitle.wfts(english).${q}`)
+          .not("published_at", "is", null)
+          .limit(8)
+      : await supabase
+          .from("articles")
+          .select("slug, title, subtitle, cities(name)")
+          .ilike("title", `%${q}%`)
+          .not("published_at", "is", null)
+          .limit(8);
 
     setArticles((a as Article[]) ?? []);
-    setPosts((p as Post[]) ?? []);
     setSelected(0);
     setLoading(false);
   }, []);
@@ -104,18 +75,11 @@ export function SearchPalette({ open, onClose }: { open: boolean; onClose: () =>
     debounceRef.current = setTimeout(() => search(val), 250);
   }
 
-  const allResults: { href: string; label: string; sub: string }[] = [
-    ...articles.map((a) => ({
-      href: `/articles/${a.slug}`,
-      label: a.title,
-      sub: a.cities?.name ?? "Article",
-    })),
-    ...posts.map((p) => ({
-      href: `/city/${p.cities?.slug}/${p.id}`,
-      label: p.title,
-      sub: p.cities?.name ?? p.profiles?.username ?? "Post",
-    })),
-  ];
+  const allResults: { href: string; label: string; sub: string }[] = articles.map((a) => ({
+    href: `/articles/${a.slug}`,
+    label: a.title,
+    sub: a.cities?.name ?? "Article",
+  }));
 
   function handleKeyDown(e: React.KeyboardEvent) {
     if (e.key === "ArrowDown") {
@@ -157,7 +121,7 @@ export function SearchPalette({ open, onClose }: { open: boolean; onClose: () =>
             value={query}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
-            placeholder="Search posts and articles…"
+            placeholder="Search articles…"
             aria-label="Search"
             className="flex-1 bg-transparent py-4 text-sm text-gray-900 outline-none placeholder:text-gray-400 dark:text-white dark:placeholder:text-white/25"
           />
@@ -182,9 +146,6 @@ export function SearchPalette({ open, onClose }: { open: boolean; onClose: () =>
 
             {articles.length > 0 && (
               <div>
-                <p className="px-4 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-widest text-gray-400 dark:text-white/25">
-                  Articles
-                </p>
                 {articles.map((a, i) => (
                   <button
                     key={a.slug}
@@ -202,34 +163,6 @@ export function SearchPalette({ open, onClose }: { open: boolean; onClose: () =>
                     </div>
                   </button>
                 ))}
-              </div>
-            )}
-
-            {posts.length > 0 && (
-              <div>
-                <p className="px-4 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-widest text-gray-400 dark:text-white/25">
-                  Forum posts
-                </p>
-                {posts.map((p, i) => {
-                  const idx = articles.length + i;
-                  return (
-                    <button
-                      key={p.id}
-                      onClick={() => { router.push(`/city/${p.cities?.slug}/${p.id}`); onClose(); }}
-                      className={`flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors ${
-                        selected === idx ? "bg-blue-50 dark:bg-blue-500/[0.08]" : "hover:bg-gray-50 dark:hover:bg-white/[0.03]"
-                      }`}
-                    >
-                      <span className="text-xs text-gray-300 dark:text-white/20" aria-hidden="true">💬</span>
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-medium text-gray-900 dark:text-white">{p.title}</p>
-                        <p className="text-xs text-gray-400 dark:text-white/30">
-                          {p.cities?.name}{p.profiles?.username ? ` · @${p.profiles.username}` : ""}
-                        </p>
-                      </div>
-                    </button>
-                  );
-                })}
               </div>
             )}
           </div>

@@ -11,7 +11,7 @@ export async function generateMetadata(props: {
   const { username } = await props.params;
   return {
     title: `@${username} — CityDiscuss`,
-    description: `View ${username}'s posts and activity on CityDiscuss.`,
+    description: `View ${username}'s comments and activity on CityDiscuss.`,
     openGraph: { title: `@${username} — CityDiscuss` },
   };
 }
@@ -49,13 +49,14 @@ export default async function ProfilePage({
 
   if (!profile) notFound();
 
-  const [{ data: posts }, { data: followers }, { data: following }, { data: isFollowingRow }] =
+  const [{ data: comments }, { data: followers }, { data: following }, { data: isFollowingRow }] =
     await Promise.all([
-      supabase
-        .from("posts")
-        .select("*, cities(name, slug), post_votes(value), comments(count)")
+      (supabase as any)
+        .from("article_comments")
+        .select("id, body, created_at, articles(title, slug)")
         .eq("user_id", profile.id)
-        .order("created_at", { ascending: false }),
+        .order("created_at", { ascending: false })
+        .limit(50),
       (supabase as any).from("follows").select("follower_id").eq("following_id", profile.id),
       (supabase as any).from("follows").select("following_id").eq("follower_id", profile.id),
       currentUser && currentUser.id !== profile.id
@@ -72,15 +73,6 @@ export default async function ProfilePage({
     month: "long",
     year: "numeric",
   });
-
-  const totalScore = (posts ?? []).reduce((sum, post) => {
-    const s =
-      (post.post_votes as { value: number }[] | null)?.reduce(
-        (a, v) => a + v.value,
-        0,
-      ) ?? 0;
-    return sum + s;
-  }, 0);
 
   return (
     <div className="mx-auto max-w-2xl px-6 py-10">
@@ -106,16 +98,9 @@ export default async function ProfilePage({
       <div className="mb-8 flex gap-6 rounded-xl border border-gray-200 bg-gray-50 px-5 py-4 dark:border-white/[0.06] dark:bg-white/[0.02]">
         <div>
           <div className="text-lg font-bold text-gray-900 dark:text-white">
-            {posts?.length ?? 0}
+            {comments?.length ?? 0}
           </div>
-          <div className="text-xs text-gray-400 dark:text-white/30">Posts</div>
-        </div>
-        <div className="w-px bg-gray-200 dark:bg-white/[0.06]" />
-        <div>
-          <div className="text-lg font-bold text-gray-900 dark:text-white">
-            {totalScore}
-          </div>
-          <div className="text-xs text-gray-400 dark:text-white/30">Votes</div>
+          <div className="text-xs text-gray-400 dark:text-white/30">Comments</div>
         </div>
         <div className="w-px bg-gray-200 dark:bg-white/[0.06]" />
         <div>
@@ -133,48 +118,30 @@ export default async function ProfilePage({
         </div>
       </div>
 
-      {/* Posts list */}
+      {/* Comment history */}
       <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-white/30">
-        Posts
+        Comments
       </h2>
 
-      {posts && posts.length > 0 ? (
+      {comments && comments.length > 0 ? (
         <div className="flex flex-col gap-1.5">
-          {posts.map((post: any) => {
-            const score =
-              (post.post_votes as { value: number }[] | null)?.reduce(
-                (a, v) => a + v.value,
-                0,
-              ) ?? 0;
-            const commentCount = post.comments?.[0]?.count ?? 0;
-            const city = post.cities;
-
-            return (
-              <Link
-                key={post.id}
-                href={`/city/${city?.slug}/${post.id}`}
-                className="group rounded-xl border border-gray-200 bg-gray-50 px-4 py-3.5 transition-all hover:border-blue-300 hover:bg-blue-50 dark:border-white/[0.06] dark:bg-white/[0.02] dark:hover:border-blue-500/25 dark:hover:bg-blue-500/[0.04]"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold leading-snug text-gray-900 dark:text-white">
-                      {post.title}
-                    </p>
-                    <p className="mt-1 text-xs text-gray-400 dark:text-white/30">
-                      {city?.name} · {timeAgo(post.created_at)}
-                    </p>
-                  </div>
-                  <div className="flex shrink-0 items-center gap-3 text-xs text-gray-400 dark:text-white/25">
-                    <span>{score} pts</span>
-                    <span>{commentCount} comments</span>
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
+          {comments.map((comment: any) => (
+            <Link
+              key={comment.id}
+              href={`/articles/${comment.articles?.slug}`}
+              className="group rounded-xl border border-gray-200 bg-gray-50 px-4 py-3.5 transition-all hover:border-blue-300 hover:bg-blue-50 dark:border-white/[0.06] dark:bg-white/[0.02] dark:hover:border-blue-500/25 dark:hover:bg-blue-500/[0.04]"
+            >
+              <p className="line-clamp-2 text-sm leading-snug text-gray-900 dark:text-white">
+                {comment.body}
+              </p>
+              <p className="mt-1.5 truncate text-xs text-gray-400 dark:text-white/30">
+                on {comment.articles?.title} · {timeAgo(comment.created_at)}
+              </p>
+            </Link>
+          ))}
         </div>
       ) : (
-        <p className="text-sm text-gray-400 dark:text-white/25">No posts yet.</p>
+        <p className="text-sm text-gray-400 dark:text-white/25">No comments yet.</p>
       )}
     </div>
   );

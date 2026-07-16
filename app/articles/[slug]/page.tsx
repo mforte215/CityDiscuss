@@ -281,8 +281,11 @@ export default async function ArticlePage({
         </div>
       )}
 
-      {/* Ad unit between article body and comments */}
-      <AdUnit slot="6023073744" format="horizontal" className="my-10" />
+      {/* Ad unit between article body and comments — a bodyless article is not
+          publisher content, so it gets no ad. */}
+      {article.body && (
+        <AdUnit slot="6023073744" format="horizontal" className="my-10" />
+      )}
 
       {/* Comments */}
       <div className="mt-14 border-t border-gray-100 pt-10 dark:border-white/[0.06]">

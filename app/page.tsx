@@ -25,14 +25,13 @@ export default async function Home(props: {
   const { tag: tagFilter } = await props.searchParams;
   const supabase = await createClient();
 
-  const [{ data: allArticles }, { data: cities }, { data: allTags }] = await Promise.all([
+  const [{ data: allArticles }, { data: allTags }] = await Promise.all([
     supabase
       .from("articles")
       .select("title, subtitle, slug, cover_url, cover_position, published_at, profiles(username), article_tags(tags(id, name, slug))")
       .not("published_at", "is", null)
       .order("published_at", { ascending: false })
       .limit(50),
-    supabase.from("cities").select("name, slug, state").order("name"),
     supabase.from("tags").select("id, name, slug").order("name"),
   ]);
 
@@ -74,14 +73,6 @@ export default async function Home(props: {
               Local news and discussion
             </p>
           </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <Link
-            href="/forum"
-            className="hidden rounded-lg border border-gray-200 px-4 py-1.5 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-800 dark:border-white/[0.08] dark:text-white/40 dark:hover:bg-white/[0.05] dark:hover:text-white/70 sm:block"
-          >
-            Forum →
-          </Link>
         </div>
       </div>
 
@@ -220,26 +211,12 @@ export default async function Home(props: {
         </div>
       )}
 
-      {/* Ad unit between articles and city links */}
-      <AdUnit slot="6023073744" format="horizontal" className="my-10" />
+      {/* Ad unit between articles and city links — only once there are articles
+          to sit alongside; AdSense forbids ads on empty screens. */}
+      {articles && articles.length > 0 && (
+        <AdUnit slot="6023073744" format="horizontal" className="my-10" />
+      )}
 
-      {/* City links footer */}
-      <div className="mt-12 border-t border-gray-100 pt-8 dark:border-white/[0.05]">
-        <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-white/25">
-          Browse city forums
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {cities?.map((city) => (
-            <Link
-              key={city.slug}
-              href={`/city/${city.slug}`}
-              className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 text-sm text-gray-500 transition-colors hover:border-gray-300 hover:text-gray-700 dark:border-white/[0.07] dark:bg-white/[0.02] dark:text-white/45 dark:hover:border-white/15 dark:hover:text-white/70"
-            >
-              {city.name}
-            </Link>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }

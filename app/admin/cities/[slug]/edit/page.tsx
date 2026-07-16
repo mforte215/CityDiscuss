@@ -106,13 +106,6 @@ export default function EditCityPage(props: {
               {error}
             </span>
           )}
-          <Link
-            href={`/city/${slug}`}
-            target="_blank"
-            className="rounded-xl border border-gray-200 px-4 py-2 text-sm text-gray-500 hover:bg-gray-100 dark:border-white/10 dark:text-white/40 dark:hover:bg-white/5"
-          >
-            View live ↗
-          </Link>
           <button
             onClick={handleSave}
             disabled={saving}
@@ -180,11 +173,11 @@ export default function EditCityPage(props: {
           <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-white/35">
             Slug{" "}
             <span className="normal-case text-gray-300 dark:text-white/20">
-              (read-only — changing would break URLs)
+              (read-only — used to tag articles)
             </span>
           </label>
           <p className="rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 font-mono text-sm text-gray-400 dark:border-white/[0.05] dark:bg-white/[0.02] dark:text-white/25">
-            /city/{slug}
+            {slug}
           </p>
         </div>
       </div>

@@ -66,13 +66,6 @@ export default async function AdminCitiesPage() {
 
             <div className="flex shrink-0 items-center gap-2">
               <Link
-                href={`/city/${city.slug}`}
-                target="_blank"
-                className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs text-gray-500 hover:bg-gray-100 dark:border-white/10 dark:text-white/40 dark:hover:bg-white/5"
-              >
-                View
-              </Link>
-              <Link
                 href={`/admin/cities/${city.slug}/edit`}
                 className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-100 dark:border-white/10 dark:text-white/60 dark:hover:bg-white/5"
               >
