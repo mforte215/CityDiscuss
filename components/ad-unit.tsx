@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 import Script from "next/script";
 
 interface AdUnitProps {
@@ -9,12 +10,23 @@ interface AdUnitProps {
   className?: string;
 }
 
+// Routes that must never serve ads (auth, utility, and admin screens). AdUnit
+// isn't placed on any of these today — this is a safeguard so that dropping one
+// in by accident can't trip the AdSense "ads without publisher-content" policy.
+const NO_AD_PREFIXES = ["/admin", "/auth", "/settings", "/account", "/notifications"];
+
 export function AdUnit({ slot, format = "auto", className }: AdUnitProps) {
+  const pathname = usePathname();
+  const suppressed = NO_AD_PREFIXES.some((p) => pathname?.startsWith(p));
+
   useEffect(() => {
+    if (suppressed) return;
     try {
       ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
     } catch {}
-  }, []);
+  }, [suppressed]);
+
+  if (suppressed) return null;
 
   return (
     <div className={className}>
