@@ -206,6 +206,42 @@ export type Database = {
           },
         ]
       }
+      document_chunks: {
+        Row: {
+          chunk_text: string
+          created_at: string | null
+          embedding: string | null
+          id: string
+          section_heading: string | null
+          source_id: string
+          source_type: string
+          title: string
+          url: string
+        }
+        Insert: {
+          chunk_text: string
+          created_at?: string | null
+          embedding?: string | null
+          id?: string
+          section_heading?: string | null
+          source_id: string
+          source_type: string
+          title: string
+          url: string
+        }
+        Update: {
+          chunk_text?: string
+          created_at?: string | null
+          embedding?: string | null
+          id?: string
+          section_heading?: string | null
+          source_id?: string
+          source_type?: string
+          title?: string
+          url?: string
+        }
+        Relationships: []
+      }
       follows: {
         Row: {
           created_at: string
@@ -242,6 +278,8 @@ export type Database = {
       notifications: {
         Row: {
           actor_id: string | null
+          article_comment_id: string | null
+          article_id: string | null
           comment_id: string | null
           created_at: string
           id: string
@@ -252,6 +290,8 @@ export type Database = {
         }
         Insert: {
           actor_id?: string | null
+          article_comment_id?: string | null
+          article_id?: string | null
           comment_id?: string | null
           created_at?: string
           id?: string
@@ -262,6 +302,8 @@ export type Database = {
         }
         Update: {
           actor_id?: string | null
+          article_comment_id?: string | null
+          article_id?: string | null
           comment_id?: string | null
           created_at?: string
           id?: string
@@ -276,6 +318,20 @@ export type Database = {
             columns: ["actor_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_article_comment_id_fkey"
+            columns: ["article_comment_id"]
+            isOneToOne: false
+            referencedRelation: "article_comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "articles"
             referencedColumns: ["id"]
           },
           {
@@ -450,6 +506,23 @@ export type Database = {
     }
     Functions: {
       is_admin: { Args: never; Returns: boolean }
+      match_chunks: {
+        Args: {
+          match_count: number
+          match_threshold: number
+          query_embedding: string
+        }
+        Returns: {
+          chunk_text: string
+          id: string
+          section_heading: string
+          similarity: number
+          source_id: string
+          source_type: string
+          title: string
+          url: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
