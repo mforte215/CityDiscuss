@@ -47,44 +47,24 @@ export default async function Home(props: {
   return (
     <div className="mx-auto max-w-5xl px-6 py-12">
       {/* Header */}
-      <div className="mb-10 flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <Image
-            src="/logo.png"
-            alt=""
-            aria-hidden="true"
-            width={40}
-            height={40}
-            className="rounded-xl block dark:hidden"
-          />
-          <Image
-            src="/logo-dark.png"
-            alt=""
-            aria-hidden="true"
-            width={40}
-            height={40}
-            className="rounded-xl hidden dark:block"
-          />
-          <div>
-            <h1 className="text-xl font-extrabold tracking-tight text-gray-900 dark:text-white">
-              CityDiscuss
-            </h1>
-            <p className="text-xs text-gray-400 dark:text-white/35">
-              Local news and discussion
-            </p>
-          </div>
-        </div>
+      <div className="mb-8 border-b-2 border-black/90 pb-6 dark:border-white/80">
+        <h1 className="font-serif text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+          CityDiscuss
+        </h1>
+        <p className="mt-1 text-sm text-gray-500 dark:text-white/40">
+          Local news and discussion
+        </p>
       </div>
 
       {/* Tag filter strip */}
       {allTags && allTags.length > 0 && (
-        <div className="mb-8 flex flex-wrap gap-2">
+        <div className="mb-8 flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-gray-200 pb-4 text-sm dark:border-white/[0.08]">
           <Link
             href="/"
-            className={`rounded-full px-3 py-1 text-sm font-medium transition-colors ${
+            className={`font-semibold uppercase tracking-wide transition-colors ${
               !tagFilter
-                ? "bg-blue-500 text-white"
-                : "border border-gray-200 bg-gray-50 text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:border-white/[0.08] dark:bg-white/[0.02] dark:text-white/40 dark:hover:border-white/15 dark:hover:text-white/60"
+                ? "text-gray-900 underline decoration-2 underline-offset-4 dark:text-white"
+                : "text-gray-400 hover:text-gray-700 dark:text-white/35 dark:hover:text-white/70"
             }`}
           >
             All
@@ -93,10 +73,10 @@ export default async function Home(props: {
             <Link
               key={tag.slug}
               href={`/?tag=${tag.slug}`}
-              className={`rounded-full px-3 py-1 text-sm font-medium transition-colors ${
+              className={`font-semibold uppercase tracking-wide transition-colors ${
                 tagFilter === tag.slug
-                  ? "bg-blue-500 text-white"
-                  : "border border-gray-200 bg-gray-50 text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:border-white/[0.08] dark:bg-white/[0.02] dark:text-white/40 dark:hover:border-white/15 dark:hover:text-white/60"
+                  ? "text-gray-900 underline decoration-2 underline-offset-4 dark:text-white"
+                  : "text-gray-400 hover:text-gray-700 dark:text-white/35 dark:hover:text-white/70"
               }`}
             >
               {tag.name}
@@ -113,38 +93,38 @@ export default async function Home(props: {
 
       {/* Featured article */}
       {featured && (
-        <div className="group relative mb-10 overflow-hidden rounded-2xl border border-gray-200 bg-gray-50 transition-all hover:border-gray-300 hover:bg-gray-100 dark:border-white/[0.07] dark:bg-white/[0.02] dark:hover:border-white/[0.12] dark:hover:bg-white/[0.04]">
+        <div className="group relative mb-10 border-b border-gray-200 pb-10 dark:border-white/[0.08]">
           {/* Overlay link covers the whole card */}
           <Link href={`/articles/${featured.slug}`} className="absolute inset-0 z-10" aria-label={featured.title} />
           {featured.cover_url && (
-            <div className="relative aspect-[2.5/1] w-full overflow-hidden">
+            <div className="relative mb-5 aspect-[2.5/1] w-full overflow-hidden border border-gray-200 dark:border-white/[0.08]">
               <Image
                 src={featured.cover_url}
                 alt={featured.title}
                 fill
-                className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                className="object-cover"
                 style={{ objectPosition: featured.cover_position ?? "center" }}
                 priority
               />
             </div>
           )}
-          <div className="relative px-7 py-6">
-            <div className="mb-2 flex flex-wrap items-center gap-2">
+          <div className="relative">
+            <div className="mb-3 flex flex-wrap items-center gap-2.5 text-xs">
               {((featured.article_tags as any[]) ?? []).map((at: any) =>
                 at.tags ? (
                   <Link key={at.tags.slug} href={`/?tag=${at.tags.slug}`}
-                    className="relative z-20 rounded-full bg-blue-50 px-2.5 py-0.5 text-[11px] font-semibold text-blue-600 hover:bg-blue-100 dark:bg-blue-500/10 dark:text-blue-400 dark:hover:bg-blue-500/20">
+                    className="relative z-20 font-bold uppercase tracking-wide text-[var(--accent)] hover:underline">
                     {at.tags.name}
                   </Link>
                 ) : null,
               )}
-              <span className="text-xs text-gray-400 dark:text-white/40">{featured.published_at ? timeAgo(featured.published_at) : null}</span>
+              <span className="text-gray-400 dark:text-white/40">{featured.published_at ? timeAgo(featured.published_at) : null}</span>
             </div>
-            <h2 className="mb-2 text-2xl font-extrabold leading-snug tracking-[-0.02em] text-gray-900 dark:text-white sm:text-3xl">
+            <h2 className="mb-2 font-serif text-3xl font-bold leading-snug text-gray-900 dark:text-white sm:text-4xl">
               {featured.title}
             </h2>
             {featured.subtitle && (
-              <p className="mb-4 text-base leading-relaxed text-gray-500 dark:text-white/50">
+              <p className="mb-4 text-lg leading-relaxed text-gray-600 dark:text-white/50">
                 {featured.subtitle}
               </p>
             )}
@@ -160,41 +140,41 @@ export default async function Home(props: {
 
       {/* Article grid */}
       {rest.length > 0 && (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {rest.map((article: any) => (
             <div
               key={article.slug}
-              className="group relative flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-gray-50 transition-all hover:border-gray-300 hover:bg-gray-100 dark:border-white/[0.07] dark:bg-white/[0.02] dark:hover:border-white/[0.12] dark:hover:bg-white/[0.04]"
+              className="group relative flex flex-col"
             >
               <Link href={`/articles/${article.slug}`} className="absolute inset-0 z-10" aria-label={article.title} />
               {article.cover_url ? (
-                <div className="relative aspect-video w-full overflow-hidden">
+                <div className="relative mb-3 aspect-video w-full overflow-hidden border border-gray-200 dark:border-white/[0.08]">
                   <Image
                     src={article.cover_url}
                     alt={article.title}
                     fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                    className="object-cover"
                     style={{ objectPosition: article.cover_position ?? "center" }}
                   />
                 </div>
               ) : (
-                <div className="flex aspect-video w-full items-center justify-center bg-gradient-to-br from-blue-500/10 to-blue-600/5 dark:from-blue-500/[0.08] dark:to-blue-600/[0.03]">
+                <div className="mb-3 flex aspect-video w-full items-center justify-center border border-gray-200 bg-gray-50 dark:border-white/[0.08] dark:bg-white/[0.02]">
                   <span className="text-3xl opacity-30" aria-hidden="true">📰</span>
                 </div>
               )}
-              <div className="relative flex flex-1 flex-col px-4 py-4">
-                <div className="mb-1.5 flex flex-wrap items-center gap-1.5">
+              <div className="relative flex flex-1 flex-col">
+                <div className="mb-1.5 flex flex-wrap items-center gap-2 text-xs">
                   {((article.article_tags as any[]) ?? []).map((at: any) =>
                     at.tags ? (
                       <Link key={at.tags.slug} href={`/?tag=${at.tags.slug}`}
-                        className="relative z-20 rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-600 hover:bg-blue-100 dark:bg-blue-500/10 dark:text-blue-400 dark:hover:bg-blue-500/20">
+                        className="relative z-20 font-bold uppercase tracking-wide text-[var(--accent)] hover:underline">
                         {at.tags.name}
                       </Link>
                     ) : null,
                   )}
-                  <span className="text-[11px] text-gray-400 dark:text-white/30">{timeAgo(article.published_at)}</span>
+                  <span className="text-gray-400 dark:text-white/30">{timeAgo(article.published_at)}</span>
                 </div>
-                <h3 className="mb-1 text-[15px] font-bold leading-snug tracking-[-0.01em] text-gray-900 dark:text-white">
+                <h3 className="mb-1 font-serif text-lg font-bold leading-snug text-gray-900 dark:text-white">
                   {article.title}
                 </h3>
                 {article.subtitle && (

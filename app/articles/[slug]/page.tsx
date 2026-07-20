@@ -154,23 +154,23 @@ export default async function ArticlePage({
       {/* Header */}
       <div className="mb-8">
         {articleTags.length > 0 && (
-          <div className="mb-3 flex flex-wrap gap-2">
+          <div className="mb-3 flex flex-wrap gap-3">
             {articleTags.map((tag) => (
               <Link
                 key={tag.id}
                 href={`/tags/${tag.slug}`}
-                className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-600 hover:bg-blue-100 dark:bg-blue-500/10 dark:text-blue-400 dark:hover:bg-blue-500/20"
+                className="text-xs font-bold uppercase tracking-wide text-[var(--accent)] hover:underline"
               >
                 {tag.name}
               </Link>
             ))}
           </div>
         )}
-        <h1 className="mb-3 text-4xl font-extrabold leading-tight tracking-[-0.03em] text-gray-900 dark:text-white">
+        <h1 className="mb-3 font-serif text-4xl font-bold leading-tight text-gray-900 dark:text-white">
           {article.title}
         </h1>
         {article.subtitle && (
-          <p className="mb-4 text-xl leading-relaxed text-gray-500 dark:text-white/50">
+          <p className="mb-4 text-xl leading-relaxed text-gray-600 dark:text-white/50">
             {article.subtitle}
           </p>
         )}
@@ -203,7 +203,7 @@ export default async function ArticlePage({
 
       {/* Cover image */}
       {article.cover_url && (
-        <div className="relative mb-10 overflow-hidden rounded-2xl border border-gray-200 dark:border-white/[0.07]" style={{ aspectRatio: "2.5/1" }}>
+        <div className="relative mb-10 overflow-hidden border border-gray-200 dark:border-white/[0.07]" style={{ aspectRatio: "2.5/1" }}>
           <Image
             src={article.cover_url}
             alt={article.title}
@@ -220,16 +220,16 @@ export default async function ArticlePage({
         <div
           className="prose prose-lg max-w-none
             dark:prose-invert
-            prose-headings:font-extrabold prose-headings:tracking-tight
+            prose-headings:font-bold
             prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4
             prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3
             prose-p:leading-relaxed prose-p:mb-5
-            prose-a:text-blue-500 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline
+            prose-a:text-[var(--accent)] prose-a:no-underline hover:prose-a:underline
             dark:prose-p:text-white/70
             dark:prose-strong:text-white
-            prose-blockquote:border-blue-500
+            prose-blockquote:border-[var(--accent)]
             dark:prose-blockquote:text-white/50
-            prose-img:rounded-xl prose-img:border prose-img:border-gray-200
+            prose-img:border prose-img:border-gray-200
             dark:prose-img:border-white/[0.07]
             prose-hr:border-gray-200 dark:prose-hr:border-white/10"
           dangerouslySetInnerHTML={{ __html: sanitizeContent(article.body) }}
@@ -242,39 +242,37 @@ export default async function ArticlePage({
           <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-white/30">
             Related articles
           </p>
-          <div className="grid gap-3 sm:grid-cols-3">
+          <div className="grid gap-6 sm:grid-cols-3">
             {related.map((r: any) => (
               <Link
                 key={r.slug}
                 href={`/articles/${r.slug}`}
-                className="group overflow-hidden rounded-xl border border-gray-200 bg-gray-50 transition-all hover:border-gray-300 hover:bg-gray-100 dark:border-white/[0.07] dark:bg-white/[0.02] dark:hover:border-white/[0.12] dark:hover:bg-white/[0.04]"
+                className="group"
               >
                 {r.cover_url ? (
-                  <div className="relative aspect-video w-full overflow-hidden">
+                  <div className="relative mb-2.5 aspect-video w-full overflow-hidden border border-gray-200 dark:border-white/[0.08]">
                     <Image
                       src={r.cover_url}
                       alt={r.title}
                       fill
-                      className="object-cover transition-transform duration-300 group-hover:scale-[1.04]"
+                      className="object-cover"
                       style={{ objectPosition: r.cover_position ?? "center" }}
                     />
                   </div>
                 ) : (
-                  <div className="flex aspect-video w-full items-center justify-center bg-gradient-to-br from-blue-500/10 to-blue-600/5 dark:from-blue-500/[0.08] dark:to-blue-600/[0.03]">
+                  <div className="mb-2.5 flex aspect-video w-full items-center justify-center border border-gray-200 bg-gray-50 dark:border-white/[0.08] dark:bg-white/[0.02]">
                     <span className="text-2xl opacity-25">📰</span>
                   </div>
                 )}
-                <div className="px-3 py-3">
-                  <p className="line-clamp-2 text-sm font-semibold leading-snug text-gray-900 dark:text-white">
-                    {r.title}
-                  </p>
-                  <p className="mt-1 text-xs text-gray-400 dark:text-white/25">
-                    {new Date(r.published_at).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                    })}
-                  </p>
-                </div>
+                <p className="line-clamp-2 font-serif text-base font-bold leading-snug text-gray-900 group-hover:underline dark:text-white">
+                  {r.title}
+                </p>
+                <p className="mt-1 text-xs text-gray-400 dark:text-white/25">
+                  {new Date(r.published_at).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                  })}
+                </p>
               </Link>
             ))}
           </div>
@@ -301,7 +299,7 @@ export default async function ArticlePage({
               return (
                 <div
                   key={c.id}
-                  className="rounded-xl border border-gray-100 bg-gray-50 px-5 py-4 dark:border-white/5 dark:bg-white/[0.02]"
+                  className="border border-gray-100 bg-gray-50 px-5 py-4 dark:border-white/5 dark:bg-white/[0.02]"
                 >
                   <div className="mb-2 flex items-center gap-2.5">
                     <Avatar
@@ -311,7 +309,7 @@ export default async function ArticlePage({
                     />
                     <Link
                       href={`/profile/${author}`}
-                      className="text-sm font-semibold text-gray-900 hover:text-blue-500 dark:text-white dark:hover:text-blue-400"
+                      className="text-sm font-semibold text-gray-900 hover:text-[var(--accent)] dark:text-white dark:hover:text-[var(--accent-light)]"
                     >
                       @{author}
                     </Link>

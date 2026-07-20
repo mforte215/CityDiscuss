@@ -3,34 +3,38 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+@theme {
+  --font-serif: var(--font-source-serif), Georgia, "Times New Roman", serif;
+}
+
 :root {
-  --bg-primary: #f8f9fa;
-  --bg-secondary: #f1f3f5;
-  --bg-card: rgba(0, 0, 0, 0.02);
-  --bg-card-hover: rgba(0, 0, 0, 0.04);
-  --border: rgba(0, 0, 0, 0.08);
-  --border-hover: rgba(0, 0, 0, 0.14);
-  --text-primary: #0f0f0f;
-  --text-secondary: rgba(0, 0, 0, 0.6);
-  --text-muted: rgba(0, 0, 0, 0.38);
-  --accent: #3b82f6;
-  --accent-light: #60a5fa;
-  --accent-glow: rgba(59, 130, 246, 0.2);
+  --bg-primary: #ffffff;
+  --bg-secondary: #f7f7f5;
+  --bg-card: #ffffff;
+  --bg-card-hover: #fafaf9;
+  --border: rgba(0, 0, 0, 0.12);
+  --border-hover: rgba(0, 0, 0, 0.22);
+  --text-primary: #111111;
+  --text-secondary: rgba(0, 0, 0, 0.62);
+  --text-muted: rgba(0, 0, 0, 0.42);
+  --accent: #326891;
+  --accent-light: #4a80a8;
+  --accent-glow: rgba(50, 104, 145, 0.15);
 }
 
 .dark {
-  --bg-primary: #0a0a0f;
-  --bg-secondary: #111118;
-  --bg-card: rgba(255, 255, 255, 0.03);
-  --bg-card-hover: rgba(255, 255, 255, 0.05);
-  --border: rgba(255, 255, 255, 0.06);
-  --border-hover: rgba(255, 255, 255, 0.12);
-  --text-primary: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.6);
-  --text-muted: rgba(255, 255, 255, 0.35);
-  --accent: #3b82f6;
-  --accent-light: #60a5fa;
-  --accent-glow: rgba(59, 130, 246, 0.25);
+  --bg-primary: #0e0e0e;
+  --bg-secondary: #161616;
+  --bg-card: #141414;
+  --bg-card-hover: #1a1a1a;
+  --border: rgba(255, 255, 255, 0.1);
+  --border-hover: rgba(255, 255, 255, 0.18);
+  --text-primary: #f2f2f2;
+  --text-secondary: rgba(255, 255, 255, 0.62);
+  --text-muted: rgba(255, 255, 255, 0.4);
+  --accent: #7ba7c7;
+  --accent-light: #97bdd8;
+  --accent-glow: rgba(123, 167, 199, 0.18);
 }
 
 * {
@@ -48,9 +52,14 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-source-serif), Georgia, "Times New Roman", serif;
+}
+
+@layer base {
+  a {
+    text-decoration: none;
+  }
 }
 
 input,

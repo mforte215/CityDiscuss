@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
+import { Geist, Source_Serif_4 } from "next/font/google";
 import Link from "next/link";
 import Image from "next/image";
 import { NavAuth } from "@/components/nav-auth";
@@ -9,6 +9,10 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
 const geist = Geist({ subsets: ["latin"] });
+const sourceSerif = Source_Serif_4({
+  subsets: ["latin"],
+  variable: "--font-source-serif",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -31,7 +35,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={geist.className} suppressHydrationWarning>
+    <html lang="en" className={`${geist.className} ${sourceSerif.variable}`} suppressHydrationWarning>
       <head>
         {/* Prevent flash of wrong theme */}
         <script
@@ -48,15 +52,15 @@ export default function RootLayout({
           Skip to main content
         </a>
         <ThemeProvider>
-          <nav className="sticky top-0 z-50 flex h-14 items-center justify-between gap-2 border-b border-black/[0.07] bg-white/85 px-3 backdrop-blur-xl sm:px-6 dark:border-white/[0.06] dark:bg-[rgba(10,10,14,0.85)]">
-            <Link href="/" className="flex min-w-0 shrink items-center gap-2">
+          <nav className="sticky top-0 z-50 flex h-16 items-center justify-between gap-2 border-b-2 border-black/90 bg-white px-3 sm:px-6 dark:border-white/80 dark:bg-[#0e0e0e]">
+            <Link href="/" className="flex min-w-0 shrink items-center gap-2.5">
               {/* Light logo */}
               <Image
                 src="/logo.png"
                 alt=""
                 aria-hidden="true"
-                width={32}
-                height={32}
+                width={30}
+                height={30}
                 className="block shrink-0 rounded-md dark:hidden"
               />
               {/* Dark logo */}
@@ -64,11 +68,11 @@ export default function RootLayout({
                 src="/logo-dark.png"
                 alt=""
                 aria-hidden="true"
-                width={32}
-                height={32}
+                width={30}
+                height={30}
                 className="hidden shrink-0 rounded-md dark:block"
               />
-              <span className="truncate bg-gradient-to-br from-blue-500 to-blue-600 bg-clip-text text-lg font-bold tracking-tight text-transparent">
+              <span className="truncate font-serif text-xl font-bold tracking-tight text-gray-900 dark:text-white">
                 CityDiscuss
               </span>
             </Link>
@@ -76,7 +80,7 @@ export default function RootLayout({
           </nav>
           <main id="main-content" className="min-h-[calc(100vh-3.5rem)]">{children}</main>
 
-          <footer className="border-t border-black/[0.06] bg-gray-50 dark:border-white/[0.05] dark:bg-white/[0.01]">
+          <footer className="border-t-2 border-black/90 bg-white dark:border-white/80 dark:bg-[#0e0e0e]">
             <div className="mx-auto max-w-5xl px-6 py-10">
               <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
                 {/* Brand */}
@@ -97,7 +101,7 @@ export default function RootLayout({
                     height={28}
                     className="rounded-md hidden dark:block"
                   />
-                  <span className="bg-gradient-to-br from-blue-500 to-blue-600 bg-clip-text font-bold tracking-tight text-transparent">
+                  <span className="font-serif text-lg font-bold tracking-tight text-gray-900 dark:text-white">
                     CityDiscuss
                   </span>
                 </div>
